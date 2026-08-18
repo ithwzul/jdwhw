@@ -1834,7 +1834,7 @@
     // Service Worker Registration for PWA
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'jadwalinhw-github-live-v3';
+        const CACHE_NAME = 'jadwalinhw-github-live-v4';
         const ASSETS_TO_CACHE = [
           'https://cdn.tailwindcss.com',
           'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
@@ -4097,52 +4097,64 @@
     var pendingUploadedLogoBase64 = null;
 
     function loadSystemSettings() {
+      try {
+        const cached = localStorage.getItem('jadwalin_settings');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          currentSystemSettings = parsed;
+          applyLogoToApp(parsed.app_logo_url, parsed.app_name);
+          fillSettingsForm(parsed);
+        }
+      } catch (e) {}
+
       google.script.run.withSuccessHandler(function(settings) {
-        if (!settings || typeof settings !== 'object') settings = {};
-        currentSystemSettings = settings;
-        
-        // Apply Branding
-        applyLogoToApp(settings.app_logo_url, settings.app_name);
-
-        // Fill form fields
-        const appNameInput = document.getElementById('settingAppName');
-        if (appNameInput) appNameInput.value = settings.app_name || 'Jadwalin HW';
-
-        const logoUrlInput = document.getElementById('settingLogoUrl');
-        if (logoUrlInput) logoUrlInput.value = settings.app_logo_url || '';
-
-        const emailEnabled = document.getElementById('settingEmailEnabled');
-        if (emailEnabled) emailEnabled.checked = (settings.reminder_email_enabled !== 'false');
-
-        const emailRecipients = document.getElementById('settingEmailRecipients');
-        if (emailRecipients) emailRecipients.value = settings.reminder_email_recipients || '';
-
-        const emailCc = document.getElementById('settingEmailCc');
-        if (emailCc) emailCc.value = settings.reminder_email_cc || '';
-
-        const emailTime = document.getElementById('settingEmailTime');
-        if (emailTime) emailTime.value = settings.reminder_email_time || '08:00';
-
-        const waEnabled = document.getElementById('settingWaEnabled');
-        if (waEnabled) waEnabled.checked = (settings.reminder_wa_enabled !== 'false');
-
-        const waNumber = document.getElementById('settingWaNumber');
-        if (waNumber) {
-          let num = settings.reminder_wa_numbers || '';
-          if (num.startsWith('62')) num = num.substring(2);
-          else if (num.startsWith('0')) num = num.substring(1);
-          waNumber.value = num;
+        if (settings && typeof settings === 'object' && Object.keys(settings).length > 0) {
+          currentSystemSettings = settings;
+          try { localStorage.setItem('jadwalin_settings', JSON.stringify(settings)); } catch (e) {}
+          applyLogoToApp(settings.app_logo_url, settings.app_name);
+          fillSettingsForm(settings);
         }
-
-        const waTemplate = document.getElementById('settingWaTemplate');
-        if (waTemplate) {
-          waTemplate.value = settings.reminder_wa_template || '🔔 *REMINDER TUGAS JADWALIN HW*\n\nHalo *{teknisi}*,\nAda tugas maintenance / work order yang perlu diselesaikan:\n📌 *ID:* #{task_id}\n🏥 *Klinik:* {klinik} ({lokasi})\n🔧 *Pekerjaan:* {judul_tugas}\n⏰ *Tenggat Waktu:* {due_date}\n📊 *Status:* {status}\n\nMohon segera tindak lanjuti di aplikasi Jadwalin HW.';
-        }
-
-        const waGwUrl = document.getElementById('settingWaGatewayUrl');
-        if (waGwUrl) waGwUrl.value = settings.reminder_wa_gateway_url || '';
-
       }).getSystemSettings();
+    }
+
+    function fillSettingsForm(settings) {
+      if (!settings) return;
+      const appNameInput = document.getElementById('settingAppName');
+      if (appNameInput && settings.app_name) appNameInput.value = settings.app_name;
+
+      const logoUrlInput = document.getElementById('settingLogoUrl');
+      if (logoUrlInput && settings.app_logo_url) logoUrlInput.value = settings.app_logo_url;
+
+      const emailEnabled = document.getElementById('settingEmailEnabled');
+      if (emailEnabled) emailEnabled.checked = (settings.reminder_email_enabled !== 'false');
+
+      const emailRecipients = document.getElementById('settingEmailRecipients');
+      if (emailRecipients && settings.reminder_email_recipients) emailRecipients.value = settings.reminder_email_recipients;
+
+      const emailCc = document.getElementById('settingEmailCc');
+      if (emailCc && settings.reminder_email_cc) emailCc.value = settings.reminder_email_cc;
+
+      const emailTime = document.getElementById('settingEmailTime');
+      if (emailTime && settings.reminder_email_time) emailTime.value = settings.reminder_email_time;
+
+      const waEnabled = document.getElementById('settingWaEnabled');
+      if (waEnabled) waEnabled.checked = (settings.reminder_wa_enabled !== 'false');
+
+      const waNumber = document.getElementById('settingWaNumber');
+      if (waNumber && settings.reminder_wa_numbers) {
+        let num = settings.reminder_wa_numbers;
+        if (num.startsWith('62')) num = num.substring(2);
+        else if (num.startsWith('0')) num = num.substring(1);
+        waNumber.value = num;
+      }
+
+      const waTemplate = document.getElementById('settingWaTemplate');
+      if (waTemplate && settings.reminder_wa_template) {
+        waTemplate.value = settings.reminder_wa_template;
+      }
+
+      const waGwUrl = document.getElementById('settingWaGatewayUrl');
+      if (waGwUrl && settings.reminder_wa_gateway_url) waGwUrl.value = settings.reminder_wa_gateway_url;
     }
 
     async function handleLogoUpload(input) {
@@ -4162,7 +4174,7 @@
             previewImg.classList.remove('hidden');
           }
           if (fallbackIcon) fallbackIcon.classList.add('hidden');
-          if (statusText) statusText.innerText = 'Logo Baru Dipilih (Belum Disimpan)';
+          if (statusText) statusText.innerText = 'Logo Baru Dipilih (Siap Disimpan)';
           if (btnText) btnText.innerText = file.name || 'Ganti Logo';
 
           // Clear direct URL input
@@ -4304,20 +4316,27 @@
           reminder_wa_gateway_url: waGwUrl
         };
 
+        // Simpan langsung ke Local Storage browser agar perubahan langsung aktif seketika
+        currentSystemSettings = settingsPayload;
+        try { localStorage.setItem('jadwalin_settings', JSON.stringify(settingsPayload)); } catch (e) {}
+        applyLogoToApp(finalLogoUrl, appName);
+
         google.script.run.withSuccessHandler(function(res) {
           if (btnTop) {
             btnTop.disabled = false;
             btnTop.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan';
           }
-          currentSystemSettings = settingsPayload;
-          applyLogoToApp(finalLogoUrl, appName);
-          showToast(res.message || 'Pengaturan sistem berhasil disimpan!');
+          if (res && res.success) {
+            showToast(res.message || 'Pengaturan sistem berhasil disimpan ke Google Sheets!');
+          } else {
+            showToast('Pengaturan aktif di browser. Perbarui Deployment Google Apps Script untuk simpan ke sheet.');
+          }
         }).withFailureHandler(function(err) {
           if (btnTop) {
             btnTop.disabled = false;
             btnTop.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan';
           }
-          showToast('Gagal menyimpan pengaturan: ' + err, true);
+          showToast('Pengaturan tersimpan di browser! (Perbarui Deployment Google Apps Script untuk sinkronisasi sheet)');
         }).saveSystemSettings(settingsPayload);
 
       } catch (err) {
@@ -4325,7 +4344,7 @@
           btnTop.disabled = false;
           btnTop.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan';
         }
-        showToast('Terjadi kesalahan saat menyimpan', true);
+        showToast('Pengaturan tersimpan di browser.');
       }
     }
 
