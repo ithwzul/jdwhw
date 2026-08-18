@@ -272,11 +272,11 @@
       <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
         <div class="flex items-center gap-2.5 overflow-hidden">
           <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-brand/10 text-brand flex items-center justify-center font-bold text-xs lg:text-sm shrink-0" id="userAvatar">
-            AU
+            US
           </div>
           <div class="overflow-hidden sidebar-profile-text">
-            <p class="text-xs font-bold text-slate-800 truncate" id="userNameDisplay">Admin Utami</p>
-            <p class="text-[10px] text-slate-400 truncate" id="userRoleDisplay">Administrator</p>
+            <p class="text-xs font-bold text-slate-800 truncate" id="userNameDisplay">Memuat Akun...</p>
+            <p class="text-[10px] text-slate-400 truncate" id="userRoleDisplay">-</p>
           </div>
         </div>
         <button onclick="logout()" class="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition shrink-0" title="Keluar / Logout">
@@ -304,7 +304,7 @@
           <label class="block font-bold text-slate-700 mb-1">Email / Username</label>
           <div class="relative">
             <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-400"></i>
-            <input type="text" id="loginEmail" required placeholder="admin@jadwalinhw.com" class="w-full pl-10 pr-3 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand font-medium transition">
+            <input type="text" id="loginEmail" required placeholder="Masukkan email atau nama" class="w-full pl-10 pr-3 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand font-medium transition">
           </div>
         </div>
 
@@ -378,7 +378,7 @@
               <option value="5">Mei</option>
               <option value="6">Juni</option>
               <option value="7">Juli</option>
-              <option value="8">Agustus</option>
+              <option value="8" selected>Agustus</option>
               <option value="9">September</option>
               <option value="10">Oktober</option>
               <option value="11">November</option>
@@ -409,17 +409,17 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 custom-shadow text-center space-y-0.5">
             <p class="text-[11px] sm:text-xs text-slate-400 font-semibold">Target Perawatan</p>
-            <h3 class="text-xl sm:text-2xl font-black text-blue-600" id="statTargetPerawatan">3585</h3>
+            <h3 class="text-xl sm:text-2xl font-black text-blue-600" id="statTargetPerawatan">0</h3>
           </div>
 
           <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 custom-shadow text-center space-y-0.5">
-            <p class="text-[11px] sm:text-xs text-slate-400 font-semibold">Aktual</p>
-            <h3 class="text-xl sm:text-2xl font-black text-emerald-600" id="statAktualPerawatan">3345</h3>
+            <p class="text-[11px] sm:text-xs text-slate-400 font-semibold">Aktual Selesai</p>
+            <h3 class="text-xl sm:text-2xl font-black text-emerald-600" id="statAktualPerawatan">0</h3>
           </div>
 
           <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 custom-shadow text-center space-y-0.5">
             <p class="text-[11px] sm:text-xs text-slate-400 font-semibold">Akurasi Aktual %</p>
-            <h3 class="text-xl sm:text-2xl font-black text-slate-800" id="statAkurasiAktual">93%</h3>
+            <h3 class="text-xl sm:text-2xl font-black text-slate-800" id="statAkurasiAktual">0%</h3>
           </div>
         </div>
       </div>
@@ -439,7 +439,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5" id="scheduleTimelineList">
-          <!-- Dynamic PM Content -->
+          <p class="text-xs text-slate-400 py-4 text-center col-span-3">Memuat data jadwal maintenance dari Google Sheets...</p>
         </div>
       </div>
 
@@ -458,13 +458,13 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5" id="woTimelineList">
-          <!-- Dynamic WO Content -->
+          <p class="text-xs text-slate-400 py-4 text-center col-span-3">Memuat data Work Order dari Google Sheets...</p>
         </div>
       </div>
 
       <div id="dashSectionAccuracy" class="space-y-4">
         <div id="technicianAccuracyContainer">
-          <!-- Dynamic Accuracy Tables -->
+          <p class="text-xs text-slate-400 py-4 text-center">Memuat ringkasan akurasi teknisi...</p>
         </div>
       </div>
 
@@ -480,7 +480,7 @@
               </tr>
             </thead>
             <tbody id="clinicRatingTableBody" class="divide-y divide-slate-100">
-              <!-- Dynamic Clinic Ratings -->
+              <tr><td colspan="3" class="p-4 text-center text-slate-400">Memuat data rating dari Google Sheets...</td></tr>
             </tbody>
           </table>
         </div>
@@ -523,7 +523,7 @@
 
             <div class="relative flex-1 sm:flex-none min-w-[150px]">
               <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-slate-400 text-xs"></i>
-              <input type="text" id="calendarSearchInput" onkeyup="renderCalendar()" placeholder="Cari..." class="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-brand font-medium">
+              <input type="text" id="calendarSearchInput" onkeyup="renderCalendar()" placeholder="Cari agenda..." class="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-brand font-medium">
             </div>
 
             <button id="btnToggleBulkMode" onclick="toggleBulkMode()" class="px-3 py-1.5 rounded-2xl border border-brand text-brand hover:bg-brand/10 font-bold text-xs flex items-center gap-1.5 transition">
@@ -618,7 +618,7 @@
         <div id="calAgendaViewContainer" class="space-y-3 pt-2">
           <div class="flex items-center justify-between pb-1">
             <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2" id="agendaSelectedDateHeading">
-              <i class="fa-regular fa-clock text-brand"></i> Agenda untuk 10 Agustus 2026
+              <i class="fa-regular fa-clock text-brand"></i> Agenda Hari Ini
             </h4>
             <span class="text-[11px] font-bold text-brand bg-brand/10 px-2.5 py-1 rounded-xl border border-brand/20" id="agendaItemCountBadge">0 Agenda</span>
           </div>
@@ -770,7 +770,7 @@
           </button>
           <div>
             <h3 class="font-bold text-slate-800 text-base sm:text-lg">Execution Log</h3>
-            <p class="text-xs text-brand font-bold" id="executionTaskIdDisplay">Task #TK-8492</p>
+            <p class="text-xs text-brand font-bold" id="executionTaskIdDisplay">Task #-</p>
           </div>
         </div>
         <button onclick="refreshCurrentView('execution')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
@@ -782,13 +782,13 @@
       <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 custom-shadow space-y-3 sm:space-y-4">
         <div class="flex justify-between items-center bg-slate-50 -m-4 sm:-m-5 p-3.5 sm:p-4 rounded-t-2xl border-b border-slate-100">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Target Asset</span>
-          <span class="px-2.5 py-1 bg-brand/10 text-brand font-bold text-xs rounded-md" id="targetAssetCat">SERVER</span>
+          <span class="px-2.5 py-1 bg-brand/10 text-brand font-bold text-xs rounded-md" id="targetAssetCat">ASSET</span>
         </div>
         <div class="pt-2">
           <div class="flex justify-between items-start">
             <div>
               <p class="text-xs text-slate-400 font-medium">Asset ID</p>
-              <p class="font-bold text-slate-800 text-sm sm:text-base" id="targetAssetId">SRV-DC1-R42-01</p>
+              <p class="font-bold text-slate-800 text-sm sm:text-base" id="targetAssetId">-</p>
             </div>
             <i class="fa-solid fa-qrcode text-brand text-xl sm:text-2xl"></i>
           </div>
@@ -796,7 +796,7 @@
             <i class="fa-solid fa-location-dot text-brand mt-0.5"></i>
             <div>
               <p class="font-semibold text-slate-700">Location</p>
-              <p class="text-slate-500" id="targetAssetLoc">Data Center 1, Rack 42, Slot A</p>
+              <p class="text-slate-500" id="targetAssetLoc">-</p>
             </div>
           </div>
         </div>
@@ -823,14 +823,12 @@
         <div class="pt-2 space-y-3">
           <!-- Buttons: Direct Camera Capture & Gallery File -->
           <div class="grid grid-cols-2 gap-2.5 max-w-sm mx-auto">
-            <!-- 1. Buka Kamera Handphone Langsung -->
             <label class="p-3 bg-brand hover:bg-brand-dark text-white rounded-xl flex flex-col items-center justify-center cursor-pointer shadow-md transition text-center">
               <i class="fa-solid fa-camera text-xl mb-1"></i>
               <span class="text-xs font-bold">Ambil Foto (Kamera)</span>
               <input type="file" id="photoFileInput" accept="image/*" capture="environment" class="hidden" onchange="previewImage(this, 'photoPreview', 'photoPreviewContainer')">
             </label>
 
-            <!-- 2. Pilih dari Galeri HP / File Komputer -->
             <label class="p-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl flex flex-col items-center justify-center cursor-pointer border border-slate-200 transition text-center">
               <i class="fa-solid fa-images text-xl mb-1 text-slate-500"></i>
               <span class="text-xs font-bold">Pilih dari Galeri</span>
@@ -1011,7 +1009,7 @@
       </div>
       <div>
         <h3 class="font-bold text-slate-800 text-base">Pilih Jenis Entri Tanggal</h3>
-        <p class="text-xs text-slate-400 mt-0.5" id="choiceSelectedDateText">Tanggal: 2026-08-10</p>
+        <p class="text-xs text-slate-400 mt-0.5" id="choiceSelectedDateText">Tanggal: -</p>
       </div>
 
       <div class="space-y-2.5 pt-1">
@@ -1053,17 +1051,13 @@
 
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Judul / Deskripsi Ringkas Work Order</label>
-          <input type="text" id="taskTitleInput" required placeholder="Contoh: Perbaikan Port Fiber Switch Inter-Floor" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand font-medium">
+          <input type="text" id="taskTitleInput" required placeholder="Contoh: Perbaikan Port Fiber Switch" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand font-medium">
         </div>
 
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Lokasi Gedung / Klinik</label>
           <select id="taskKlinikSelect" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-brand">
-            <option value="Data Center 1">Data Center 1</option>
-            <option value="Klinik Utama Sehat">Klinik Utama Sehat</option>
-            <option value="Klinik Medika Pusat">Klinik Medika Pusat</option>
-            <option value="Klinik Medika Barat">Klinik Medika Barat</option>
-            <option value="Klinik Husada Selatan">Klinik Husada Selatan</option>
+            <!-- Dynamic Locations -->
           </select>
         </div>
 
@@ -1093,14 +1087,12 @@
         <div>
           <label class="block font-semibold text-slate-600 mb-1.5">Foto Bukti / Dokumentasi</label>
           <div class="grid grid-cols-2 gap-2">
-            <!-- Tombol Buka Kamera Handphone -->
             <label class="p-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-xl flex items-center justify-center gap-2 cursor-pointer transition text-xs font-bold">
               <i class="fa-solid fa-camera text-base text-brand"></i>
               <span>Buka Kamera</span>
               <input type="file" id="taskPhotoFileInput" accept="image/*" capture="environment" class="hidden" onchange="previewImage(this, 'taskPhotoPreview', 'taskPhotoContainer')">
             </label>
 
-            <!-- Tombol Pilih dari Galeri -->
             <label class="p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl flex items-center justify-center gap-2 cursor-pointer transition text-xs font-bold">
               <i class="fa-solid fa-folder-open text-base text-slate-500"></i>
               <span>Dari Galeri</span>
@@ -1164,7 +1156,7 @@
         </div>
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Tanggal Pelaksanaan</label>
-          <input type="date" id="scheduleDateInput" required value="2026-08-10" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand">
+          <input type="date" id="scheduleDateInput" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand">
         </div>
         <button type="submit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow mt-2">
           Simpan Jadwal
@@ -1187,11 +1179,13 @@
             <option value="SERVER">SERVER</option>
             <option value="NETWORK">NETWORK</option>
             <option value="POWER">POWER</option>
+            <option value="STORAGE">STORAGE</option>
+            <option value="OTHER">OTHER</option>
           </select>
         </div>
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Deskripsi Prosedur Pekerjaan</label>
-          <textarea id="chkAddDesc" required rows="3" placeholder="Contoh: Periksa temperatur ambient dan performa fan kipas pendingin." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand"></textarea>
+          <textarea id="chkAddDesc" required rows="3" placeholder="Contoh: Periksa temperatur ambient dan fan cooling..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand"></textarea>
         </div>
         <button type="submit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow mt-2">
           Simpan Checklist
@@ -1210,11 +1204,11 @@
       <form onsubmit="handleSaveAsset(event)" class="space-y-3 text-xs">
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Kode / Asset ID</label>
-          <input type="text" id="assetIdInput" required placeholder="Contoh: SRV-DC1-R42-02" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand font-bold">
+          <input type="text" id="assetIdInput" required placeholder="Contoh: SRV-DC1-01" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand font-bold">
         </div>
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Nama Perangkat Aset</label>
-          <input type="text" id="assetNameInput" required placeholder="Contoh: Server Backup Secondary" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand">
+          <input type="text" id="assetNameInput" required placeholder="Contoh: Server Primary Database" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand">
         </div>
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Kategori Perangkat</label>
@@ -1223,28 +1217,16 @@
             <option value="NETWORK">NETWORK</option>
             <option value="POWER">POWER</option>
             <option value="STORAGE">STORAGE</option>
+            <option value="OTHER">OTHER</option>
           </select>
         </div>
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Lokasi Gedung / Klinik</label>
-          <select id="assetLocationSelect" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-brand">
-            <option value="Data Center 1">Data Center 1</option>
-            <option value="Klinik Utama Sehat">Klinik Utama Sehat</option>
-            <option value="Klinik Medika Pusat">Klinik Medika Pusat</option>
-            <option value="Klinik Medika Barat">Klinik Medika Barat</option>
-            <option value="Klinik Husada Selatan">Klinik Husada Selatan</option>
-          </select>
+          <input type="text" id="assetLocationSelect" required placeholder="Contoh: Klinik Utama" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand font-medium">
         </div>
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Ruangan / Slot Penempatan</label>
-          <select id="assetRoomSelect" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-brand">
-            <option value="Rack 42, Slot A">Rack 42, Slot A</option>
-            <option value="Ruang Server">Ruang Server</option>
-            <option value="Power Room">Power Room</option>
-            <option value="Ruang Server Gd. B">Ruang Server Gd. B</option>
-            <option value="UPS Room Center">UPS Room Center</option>
-            <option value="Main Control Room">Main Control Room</option>
-          </select>
+          <input type="text" id="assetRoomSelect" placeholder="Contoh: Ruang Server Lt. 2" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand font-medium">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -1295,15 +1277,15 @@
         <div class="grid grid-cols-2 gap-3 bg-white p-3 rounded-lg border border-slate-200">
           <div>
             <p class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase">Task ID</p>
-            <p class="font-bold text-slate-700" id="pdfTaskIdDisplay">#TK-8492</p>
+            <p class="font-bold text-slate-700" id="pdfTaskIdDisplay">-</p>
             <p class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase mt-2">Tanggal Inspeksi</p>
-            <p class="font-medium text-slate-700" id="pdfDateDisplay">2026-08-04</p>
+            <p class="font-medium text-slate-700" id="pdfDateDisplay">-</p>
           </div>
           <div>
             <p class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase">Teknisi Bertanggung Jawab</p>
-            <p class="font-bold text-slate-700" id="pdfTechDisplay">Budi Teknisi</p>
+            <p class="font-bold text-slate-700" id="pdfTechDisplay">-</p>
             <p class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase mt-2">Target Asset</p>
-            <p class="font-medium text-slate-700" id="pdfAssetDisplay">SRV-DC1-R42-01 (SERVER)</p>
+            <p class="font-medium text-slate-700" id="pdfAssetDisplay">-</p>
           </div>
         </div>
 
@@ -1321,7 +1303,7 @@
           </div>
           <div class="bg-white p-3 rounded-lg border border-slate-200">
             <p class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase">Rating Kondisi</p>
-            <p class="font-bold text-amber-500 text-xs sm:text-sm" id="pdfRating">★ 4.0 / 5.0</p>
+            <p class="font-bold text-amber-500 text-xs sm:text-sm" id="pdfRating">★ 5.0 / 5.0</p>
           </div>
         </div>
 
@@ -1353,7 +1335,7 @@
       <div class="space-y-3 text-xs">
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Email Penerima / Kepala Klinik</label>
-          <input type="email" id="emailRecipient" required value="admin@kliniksehat.com" placeholder="nama@klinik.com" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand">
+          <input type="email" id="emailRecipient" required placeholder="nama@klinik.com" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand">
         </div>
         <div>
           <label class="block font-semibold text-slate-600 mb-1">CC Email (Optional)</label>
@@ -1372,7 +1354,7 @@
 
   <script>
     // =========================================================================
-    // KONFIGURASI BACKEND GOOGLE APPS SCRIPT (REST API)
+    // KONFIGURASI BACKEND GOOGLE APPS SCRIPT (REST API LIVE)
     // =========================================================================
     var GAS_BACKEND_URL = "https://script.google.com/a/macros/fdcdentalclinic.co.id/s/AKfycbyG4bQql49IVq5pRUOgXdQKoRrh4VczvBb40fyJCyXF8k3FlIr9j2_I7rFz_LgY7I31/exec";
 
@@ -1391,90 +1373,52 @@
         const result = await response.json();
         return result;
       } catch (err) {
-        console.warn('Backend call failed, falling back to mock runner:', err);
-        return null;
+        console.error('Backend API Error:', err);
+        return { success: false, message: 'Koneksi ke backend gagal: ' + err.toString() };
       }
     }
 
-    // Google Apps Script Runner Bridge (Memungkinkan syntax google.script.run bekerja di GitHub)
+    // Google Apps Script Bridge
     function createUnifiedRunner() {
       var successCb = null;
       var failureCb = null;
 
       function executeApi(action, data) {
         callGasBackend(action, data).then(function(res) {
-          if (res !== null) {
-            if (res.success && res.data !== undefined) {
-              if (successCb) successCb(res.data);
-            } else if (res.success) {
-              if (successCb) successCb(res);
-            } else {
-              if (failureCb) failureCb(res.message || 'Request failed');
-              else if (successCb) successCb(res);
-            }
+          if (res && res.success && res.data !== undefined) {
+            if (successCb) successCb(res.data);
+          } else if (res && res.success) {
+            if (successCb) successCb(res);
           } else {
-            // Fallback ke Mock lokal jika Apps Script offline / CORS blocked saat testing
-            fallbackToMock(action, data, successCb, failureCb);
+            const errMsg = (res && res.message) ? res.message : 'Permintaan data gagal diproses';
+            if (failureCb) failureCb(errMsg);
+            else if (successCb) successCb(res);
           }
         }).catch(function(err) {
-          fallbackToMock(action, data, successCb, failureCb);
+          if (failureCb) failureCb(err.toString());
         });
       }
 
       var runner = {
         withSuccessHandler: function(cb) { successCb = cb; return runner; },
         withFailureHandler: function(cb) { failureCb = cb; return runner; },
-        loginUser: function(email, password) {
-          executeApi('loginUser', { email: email, password: password });
-        },
-        getTechnicians: function() {
-          executeApi('getTechnicians', {});
-        },
-        getMaintenanceLogs: function(filterType, userRole, userName) {
-          executeApi('getMaintenanceLogs', { filterType: filterType, userRole: userRole, userName: userName });
-        },
-        getTasks: function(userRole, userName) {
-          executeApi('getTasks', { userRole: userRole, userName: userName });
-        },
-        saveTask: function(payload) {
-          executeApi('saveTask', payload);
-        },
-        deleteTask: function(taskId) {
-          executeApi('deleteTask', { taskId: taskId });
-        },
-        checkAndSendTaskReminders: function() {
-          executeApi('checkAndSendTaskReminders', {});
-        },
-        getAssets: function() {
-          executeApi('getAssets', {});
-        },
-        saveAsset: function(payload) {
-          executeApi('saveAsset', payload);
-        },
-        getChecklists: function(category) {
-          executeApi('getChecklists', { category: category });
-        },
-        addChecklistItem: function(item) {
-          executeApi('addChecklistItem', item);
-        },
-        toggleChecklistStatus: function(id) {
-          executeApi('toggleChecklistStatus', { id: id });
-        },
-        deleteChecklistItem: function(id) {
-          executeApi('deleteChecklistItem', { id: id });
-        },
-        uploadMediaToDrive: function(base64Data, filename) {
-          executeApi('uploadMediaToDrive', { base64Data: base64Data, filename: filename });
-        },
-        submitMaintenanceLog: function(payload) {
-          executeApi('submitMaintenanceLog', payload);
-        },
-        sendEmailReport: function(email, taskId, payload, ccEmail) {
-          executeApi('sendEmailReport', { email: email, taskId: taskId, payload: payload, ccEmail: ccEmail });
-        },
-        bulkUpdateLogs: function(taskIds, newStatus, rating, reasonDelay, ticketNumber) {
-          executeApi('bulkUpdateLogs', { taskIds: taskIds, newStatus: newStatus, rating: rating, reasonDelay: reasonDelay, ticketNumber: ticketNumber });
-        }
+        loginUser: function(email, password) { executeApi('loginUser', { email: email, password: password }); },
+        getTechnicians: function() { executeApi('getTechnicians', {}); },
+        getMaintenanceLogs: function(filterType, userRole, userName) { executeApi('getMaintenanceLogs', { filterType: filterType, userRole: userRole, userName: userName }); },
+        getTasks: function(userRole, userName) { executeApi('getTasks', { userRole: userRole, userName: userName }); },
+        saveTask: function(payload) { executeApi('saveTask', payload); },
+        deleteTask: function(taskId) { executeApi('deleteTask', { taskId: taskId }); },
+        checkAndSendTaskReminders: function() { executeApi('checkAndSendTaskReminders', {}); },
+        getAssets: function() { executeApi('getAssets', {}); },
+        saveAsset: function(payload) { executeApi('saveAsset', payload); },
+        getChecklists: function(category) { executeApi('getChecklists', { category: category }); },
+        addChecklistItem: function(item) { executeApi('addChecklistItem', item); },
+        toggleChecklistStatus: function(id) { executeApi('toggleChecklistStatus', { id: id }); },
+        deleteChecklistItem: function(id) { executeApi('deleteChecklistItem', { id: id }); },
+        uploadMediaToDrive: function(base64Data, filename) { executeApi('uploadMediaToDrive', { base64Data: base64Data, filename: filename }); },
+        submitMaintenanceLog: function(payload) { executeApi('submitMaintenanceLog', payload); },
+        sendEmailReport: function(email, taskId, payload, ccEmail) { executeApi('sendEmailReport', { email: email, taskId: taskId, payload: payload, ccEmail: ccEmail }); },
+        bulkUpdateLogs: function(taskIds, newStatus, rating, reasonDelay, ticketNumber) { executeApi('bulkUpdateLogs', { taskIds: taskIds, newStatus: newStatus, rating: rating, reasonDelay: reasonDelay, ticketNumber: ticketNumber }); }
       };
       return runner;
     }
@@ -1482,7 +1426,7 @@
     // Service Worker Registration for PWA
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'jadwalinhw-github-v6';
+        const CACHE_NAME = 'jadwalinhw-github-live-v1';
         const ASSETS_TO_CACHE = [
           'https://cdn.tailwindcss.com',
           'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
@@ -1504,7 +1448,7 @@
 
         self.addEventListener('fetch', (e) => {
           if (e.request.url.includes('script.google.com')) {
-            return; // Jangan cache API Google Sheets
+            return;
           }
           e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
         });
@@ -1516,11 +1460,11 @@
 
     // STATE VARIABLES
     var currentRole = 'Admin';
-    var currentRating = 4;
+    var currentRating = 5;
     var signatureCanvas, signatureCtx;
     var isDrawing = false;
     var currentUser = null;
-    var currentActiveTaskId = 'TK-8492';
+    var currentActiveTaskId = '';
     var selectedCalendarChoiceDate = '';
 
     var activeSchedFilter = 'ALL';
@@ -1528,8 +1472,8 @@
     var activeTaskFilter = 'ALL';
     var currentLogsData = [];
     var currentTasksData = [];
-    var currentCalMonth = 7;
-    var currentCalYear = 2026;
+    var currentCalMonth = new Date().getMonth();
+    var currentCalYear = new Date().getFullYear();
     var isBulkMode = false;
     var selectedBulkTaskIds = [];
 
@@ -1539,66 +1483,6 @@
 
     var expandedSchedCols = { PREV: false, TODAY: false, UPCOMING: false };
     var expandedWoCols = { PREV: false, TODAY: false, UPCOMING: false };
-
-    // MOCK DATA FALLBACK (Ketika offline atau testing lokal)
-    var mockUsers = [
-      { UserID: 'USR-001', Name: 'Admin Utami', Email: 'admin@jadwalinhw.com', Role: 'Admin', Password: 'admin123' },
-      { UserID: 'USR-002', Name: 'Budi Teknisi', Email: 'budi@jadwalinhw.com', Role: 'Technician', Password: 'tech123' },
-      { UserID: 'USR-003', Name: 'Andi Teknisi', Email: 'andi@jadwalinhw.com', Role: 'Technician', Password: 'tech123' },
-      { UserID: 'USR-004', Name: 'Deni Teknisi', Email: 'deni@jadwalinhw.com', Role: 'Technician', Password: 'tech123' }
-    ];
-
-    var mockLogs = [
-      { TaskID: 'TK-8492', Date: '2026-08-04', Klinik: 'Klinik Utama Sehat', Lokasi: 'Data Center 1, Rack 42, Slot A', Technician: 'Budi Teknisi', KodePeralatan: 'SRV-DC1-R42-01', JenisPerawatan: 'Preventive Maintenance', StatusPerawatan: 'Optimal', Frekuensi: 'Bulanan', Metode: 'Remote', Checklist_Avg_Rating: 4.5, Reason_Delay: '', Ticket_Number: '' },
-      { TaskID: 'TK-8497', Date: '2026-08-04', Klinik: 'Klinik Utama Sehat', Lokasi: 'Data Center 1, Rack 42, Slot B', Technician: 'Budi Teknisi', KodePeralatan: 'SRV-DC1-R42-02', JenisPerawatan: 'Backup Maintenance', StatusPerawatan: 'Optimal', Frekuensi: 'Bulanan', Metode: 'Remote', Checklist_Avg_Rating: 5.0, Reason_Delay: '', Ticket_Number: '' },
-      { TaskID: 'TK-8493', Date: '2026-08-05', Klinik: 'Klinik Medika Barat', Lokasi: 'Ruang Server Gd. B', Technician: 'Andi Teknisi', KodePeralatan: 'RTR-KLN-002', JenisPerawatan: 'Network Check', StatusPerawatan: 'Needs Attention', Frekuensi: 'Mingguan', Metode: 'Visit', Checklist_Avg_Rating: 3.0, Reason_Delay: '', Ticket_Number: '' },
-      { TaskID: 'TK-8498', Date: '2026-08-05', Klinik: 'Klinik Medika Barat', Lokasi: 'Ruang Server Gd. B', Technician: 'Andi Teknisi', KodePeralatan: 'SWT-KLN-005', JenisPerawatan: 'Switch Check', StatusPerawatan: 'Optimal', Frekuensi: 'Mingguan', Metode: 'Remote', Checklist_Avg_Rating: 4.0, Reason_Delay: '', Ticket_Number: '' },
-      { TaskID: 'TK-8494', Date: '2026-08-02', Klinik: 'Klinik Husada Selatan', Lokasi: 'UPS Room Center', Technician: 'Deni Teknisi', KodePeralatan: 'UPS-DC1-003', JenisPerawatan: 'Power Maintenance', StatusPerawatan: 'Tertunda / Delay', Frekuensi: 'Bulanan', Metode: 'Remote', Checklist_Avg_Rating: 2.0, Reason_Delay: 'Nomor Tiket', Ticket_Number: 'TKT-2026-992' },
-      { TaskID: 'TK-8495', Date: '2026-08-10', Klinik: 'Klinik Medika Pusat', Lokasi: 'Ruang Server Gd. A', Technician: 'Budi Teknisi', KodePeralatan: 'RTR-KLN-002', JenisPerawatan: 'Network Check', StatusPerawatan: 'Scheduled', Frekuensi: 'Mingguan', Metode: 'Remote', Checklist_Avg_Rating: 5.0, Reason_Delay: '', Ticket_Number: '' },
-      { TaskID: 'TK-8496', Date: '2026-08-12', Klinik: 'Klinik Utama Sehat', Lokasi: 'Data Center 1', Technician: 'Budi Teknisi', KodePeralatan: 'SRV-DC1-R42-01', JenisPerawatan: 'Preventive Maintenance', StatusPerawatan: 'Scheduled', Frekuensi: 'Bulanan', Metode: 'Remote', Checklist_Avg_Rating: 5.0, Reason_Delay: '', Ticket_Number: '' }
-    ];
-
-    var mockTasks = [
-      { TaskID: 'WO-101', Title: 'Perbaikan Port Fiber Switch Inter-Floor', Klinik: 'Klinik Medika Pusat', Lokasi: 'Ruang Server Gd. A', AssetID: 'RTR-KLN-002', Technician: 'Budi Teknisi', DueDate: '2026-08-12', Status: 'Belum Selesai', Priority: 'High', JobType: 'Daily', PhotoUrl: '', AttachmentUrl: 'https://drive.google.com', LastUpdate: '2026-08-05 10:30', Description: 'Switch port 12 flapping, butuh ganti kabel patch cord SFP' },
-      { TaskID: 'WO-102', Title: 'Replacement Kipas Bezel Fan Chassis', Klinik: 'Data Center 1', Lokasi: 'Rack 42, Slot A', AssetID: 'SRV-DC1-R42-01', Technician: 'Andi Teknisi', DueDate: '2026-08-08', Status: 'Selesai / Closed', Priority: 'Medium', JobType: 'Project', PhotoUrl: '', AttachmentUrl: '', LastUpdate: '2026-08-04 14:15', Description: 'Fan modul #2 mengalami noise frekuensi tinggi' },
-      { TaskID: 'WO-103', Title: 'Pemeriksaan Baterai UPS Cadangan', Klinik: 'Klinik Husada Selatan', Lokasi: 'UPS Room Center', AssetID: 'UPS-DC1-003', Technician: 'Deni Teknisi', DueDate: '2026-08-10', Status: 'Dalam Proses', Priority: 'Medium', JobType: 'Daily', PhotoUrl: '', AttachmentUrl: '', LastUpdate: '2026-08-06 09:00', Description: 'Inspeksi tegangan sel baterai modul B' }
-    ];
-
-    var mockAssets = [
-      { AssetID: 'SRV-DC1-R42-01', AssetName: 'Server Primary DB', Category: 'SERVER', Location: 'Data Center 1', Room: 'Rack 42, Slot A', Status: 'Optimal', LastService: '2026-07-15', HealthRating: 4.8 },
-      { AssetID: 'RTR-KLN-002', AssetName: 'Cisco Router Core', Category: 'NETWORK', Location: 'Klinik Medika Pusat', Room: 'Ruang Server', Status: 'Needs Attention', LastService: '2026-07-20', HealthRating: 3.5 },
-      { AssetID: 'UPS-DC1-003', AssetName: 'APC Smart-UPS 5kVA', Category: 'POWER', Location: 'Data Center 1', Room: 'Power Room', Status: 'Tertunda / Delay', LastService: '2026-06-10', HealthRating: 2.0 }
-    ];
-
-    var mockChecklists = [
-      { ChecklistID: 'CHK-001', Category: 'SERVER', ItemDescription: 'Verify physical connection integrity of all power supply units (PSU 1 & PSU 2).', IsActive: true },
-      { ChecklistID: 'CHK-002', Category: 'SERVER', ItemDescription: 'Check chassis ambient temperature sensors via iLO/iDRAC interface.', IsActive: true },
-      { ChecklistID: 'CHK-003', Category: 'SERVER', ItemDescription: 'Clean dust filters on front bezel and verify unobstructed airflow.', IsActive: true },
-      { ChecklistID: 'CHK-004', Category: 'NETWORK', ItemDescription: 'Check port LED status and fiber patch cable bend radius.', IsActive: true },
-      { ChecklistID: 'CHK-005', Category: 'POWER', ItemDescription: 'Inspect UPS battery voltage & ambient room temperature.', IsActive: true }
-    ];
-
-    function fallbackToMock(action, data, successCb, failureCb) {
-      if (action === 'loginUser') {
-        var found = mockUsers.find(u => (u.Email === data.email || u.Name.toLowerCase() === data.email.toLowerCase()) && u.Password === data.password);
-        if (found && successCb) successCb({ success: true, user: { userId: found.UserID, name: found.Name, email: found.Email, role: found.Role }, message: 'Login Berhasil!' });
-        else if (successCb) successCb({ success: false, message: 'Email atau password salah!' });
-      } else if (action === 'getTechnicians') {
-        if (successCb) successCb(mockUsers.filter(u => u.Role === 'Technician'));
-      } else if (action === 'getMaintenanceLogs') {
-        if (successCb) successCb(mockLogs);
-      } else if (action === 'getTasks') {
-        if (successCb) successCb(mockTasks);
-      } else if (action === 'getAssets') {
-        if (successCb) successCb(mockAssets);
-      } else if (action === 'getChecklists') {
-        let items = mockChecklists;
-        if (data.category) items = mockChecklists.filter(c => c.Category === data.category);
-        if (successCb) successCb(items);
-      } else {
-        if (successCb) successCb({ success: true, message: 'Operasi berhasil disimpan' });
-      }
-    }
 
     // Pasang Runner ke window.google
     window.google = {
@@ -1654,7 +1538,7 @@
 
       google.script.run
         .withSuccessHandler(function(logs) {
-          let data = logs || mockLogs;
+          let data = Array.isArray(logs) ? logs : [];
           if (userRole === 'Technician' && userName) {
             data = data.filter(l => l.Technician && l.Technician.toLowerCase() === userName.toLowerCase());
           }
@@ -1676,8 +1560,8 @@
           }
         })
         .withFailureHandler(function(err) {
-          console.log('Error loading logs:', err);
-          currentLogsData = mockLogs;
+          console.error('Error loading logs:', err);
+          currentLogsData = [];
           applyDashboardAnalytics();
         })
         .getMaintenanceLogs(null, userRole, userName);
@@ -1685,7 +1569,7 @@
     window.loadDashboardData = loadDashboardData;
 
     function refreshCurrentView(viewName) {
-      showToast('Memperbarui data ' + viewName + '...');
+      showToast('Memperbarui data dari Google Sheets...');
       if (viewName === 'dashboard' || viewName === 'calendar') {
         loadDashboardData();
       } else if (viewName === 'tasks') {
@@ -1807,7 +1691,7 @@
       const startDate = document.getElementById('filterStartDate')?.value;
       const endDate = document.getElementById('filterEndDate')?.value;
 
-      let logs = (currentLogsData && currentLogsData.length) ? currentLogsData : mockLogs;
+      let logs = Array.isArray(currentLogsData) ? currentLogsData : [];
 
       if (currentRole === 'Technician' && currentUser) {
         logs = logs.filter(l => l.Technician && l.Technician.toLowerCase() === currentUser.name.toLowerCase());
@@ -1841,9 +1725,9 @@
     }
 
     function updateDashboardStats(logs) {
-      const target = logs.length * 10;
-      const actual = logs.filter(l => l.StatusPerawatan === 'Optimal').length * 10;
-      const pct = target > 0 ? Math.round((actual / target) * 100) : 100;
+      const target = logs.length;
+      const actual = logs.filter(l => l.StatusPerawatan === 'Optimal').length;
+      const pct = target > 0 ? Math.round((actual / target) * 100) : 0;
 
       const targetEl = document.getElementById('statTargetPerawatan');
       const actualEl = document.getElementById('statAktualPerawatan');
@@ -1934,7 +1818,7 @@
 
     function renderScheduleTimeline(filterType = 'ALL', logs = null) {
       if (logs) currentLogsData = logs;
-      let dataToRender = logs || currentLogsData || mockLogs;
+      let dataToRender = logs || currentLogsData || [];
 
       if (currentRole === 'Technician' && currentUser) {
         dataToRender = dataToRender.filter(l => l.Technician && l.Technician.toLowerCase() === currentUser.name.toLowerCase());
@@ -2057,7 +1941,7 @@
     }
 
     function renderWoTimeline(filterType = 'ALL') {
-      let tasksData = currentTasksData && currentTasksData.length ? currentTasksData : mockTasks;
+      let tasksData = Array.isArray(currentTasksData) ? currentTasksData : [];
 
       if (currentRole === 'Technician' && currentUser) {
         tasksData = tasksData.filter(t => t.Technician && t.Technician.toLowerCase() === currentUser.name.toLowerCase());
@@ -2189,7 +2073,7 @@
         techGroup[techName] = techLogs;
       } else {
         logs.forEach(l => {
-          const tech = l.Technician || 'Budi Teknisi';
+          const tech = l.Technician || 'Teknisi';
           if (!techGroup[tech]) techGroup[tech] = [];
           techGroup[tech].push(l);
         });
@@ -2198,14 +2082,21 @@
       const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
       let html = '';
-      Object.keys(techGroup).forEach((techName, techIdx) => {
+      const techNames = Object.keys(techGroup);
+
+      if (techNames.length === 0) {
+        container.innerHTML = `<div class="p-6 bg-white rounded-2xl border border-slate-200 text-xs text-slate-400 italic text-center">Belum ada riwayat maintenance teknisi di database</div>`;
+        return;
+      }
+
+      techNames.forEach((techName, techIdx) => {
         const techLogs = techGroup[techName];
 
         const monthlyStats = {};
         const monthlyLogs = {};
         techLogs.forEach(l => {
           const dateStr = formatDateStr(l.Date);
-          let monthIdx = 7;
+          let monthIdx = new Date().getMonth();
           if (dateStr && dateStr.split('-').length === 3) {
             monthIdx = parseInt(dateStr.split('-')[1]) - 1;
           }
@@ -2283,7 +2174,7 @@
         `;
       });
 
-      container.innerHTML = html || `<div class="p-4 bg-white rounded-2xl border border-slate-200 text-xs text-slate-400 italic">Tidak ada data teknisi pada filter ini</div>`;
+      container.innerHTML = html;
     }
 
     function renderClinicRatingTable(logs) {
@@ -2293,7 +2184,7 @@
       const clinicGroup = {};
       const clinicLogs = {};
       logs.forEach(l => {
-        const cName = l.Klinik || 'Klinik Utama Sehat';
+        const cName = l.Klinik || 'Klinik Utama';
         if (!clinicGroup[cName]) {
           clinicGroup[cName] = { completed: 0, totalRating: 0, count: 0 };
           clinicLogs[cName] = [];
@@ -2305,7 +2196,13 @@
         clinicLogs[cName].push(l);
       });
 
-      tbody.innerHTML = Object.keys(clinicGroup).map((cName, cIdx) => {
+      const clinicKeys = Object.keys(clinicGroup);
+      if (clinicKeys.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Belum ada data klinik yang tercatat di sheet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = clinicKeys.map((cName, cIdx) => {
         const st = clinicGroup[cName];
         const cList = clinicLogs[cName] || [];
         const avg = st.count > 0 ? (st.totalRating / st.count).toFixed(1) : '5.0';
@@ -2405,10 +2302,11 @@
 
       if (!selectedCalendarChoiceDate) {
         const monthStr = String(currentCalMonth + 1).padStart(2, '0');
-        selectedCalendarChoiceDate = `${currentCalYear}-${monthStr}-10`;
+        const dayStr = String(new Date().getDate()).padStart(2, '0');
+        selectedCalendarChoiceDate = `${currentCalYear}-${monthStr}-${dayStr}`;
       }
 
-      let pmLogs = (currentLogsData && currentLogsData.length) ? currentLogsData : mockLogs;
+      let pmLogs = Array.isArray(currentLogsData) ? currentLogsData : [];
       if (currentRole === 'Technician' && currentUser) {
         pmLogs = pmLogs.filter(l => l.Technician && l.Technician.toLowerCase() === currentUser.name.toLowerCase());
       }
@@ -2429,7 +2327,7 @@
         };
       });
 
-      let woTasks = (currentTasksData && currentTasksData.length) ? currentTasksData : mockTasks;
+      let woTasks = Array.isArray(currentTasksData) ? currentTasksData : [];
       if (currentRole === 'Technician' && currentUser) {
         woTasks = woTasks.filter(t => t.Technician && t.Technician.toLowerCase() === currentUser.name.toLowerCase());
       }
@@ -2446,7 +2344,7 @@
           technician: t.Technician || '',
           method: 'Work Order',
           jobType: t.JobType || 'Daily',
-          title: t.Title || 'Perbaikan IT',
+          title: t.Title || 'Work Order',
           raw: t
         });
       });
@@ -2622,7 +2520,7 @@
 
     function selectAllCalendarTasks(select) {
       if (select) {
-        const logs = currentLogsData && currentLogsData.length ? currentLogsData : mockLogs;
+        const logs = Array.isArray(currentLogsData) ? currentLogsData : [];
         selectedBulkTaskIds = logs.map(l => l.TaskID);
       } else {
         selectedBulkTaskIds = [];
@@ -2641,7 +2539,7 @@
       const rating = document.getElementById('bulkTargetRating').value;
 
       google.script.run.withSuccessHandler(function(res) {
-        showToast(res.message);
+        showToast(res.message || 'Berhasil memperbarui jadwal massal!');
         selectedBulkTaskIds = [];
         document.getElementById('selectedTaskCount').innerText = '0 Jadwal Dipilih';
         loadDashboardData();
@@ -2674,7 +2572,7 @@
       const userName = currentUser ? currentUser.name : '';
 
       google.script.run.withSuccessHandler(function(tasks) {
-        let list = tasks || mockTasks;
+        let list = Array.isArray(tasks) ? tasks : [];
         if (userRole === 'Technician' && userName) {
           list = list.filter(t => t.Technician && t.Technician.toLowerCase() === userName.toLowerCase());
         }
@@ -2701,7 +2599,7 @@
     }
 
     function renderTasksList(filterStatus = 'ALL') {
-      let list = currentTasksData && currentTasksData.length ? currentTasksData : mockTasks;
+      let list = Array.isArray(currentTasksData) ? currentTasksData : [];
 
       if (filterStatus === 'Belum Selesai') {
         list = list.filter(t => t.Status !== 'Selesai / Closed' && t.Status !== 'Selesai');
@@ -2713,6 +2611,11 @@
 
       const tbody = document.getElementById('taskTableBody');
       if (!tbody) return;
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 italic">Belum ada data Work Order di sheet. Klik "+ Work Order" untuk menambahkan.</td></tr>`;
+        return;
+      }
 
       tbody.innerHTML = list.map(t => {
         const isClosed = t.Status === 'Selesai / Closed' || t.Status === 'Selesai';
@@ -2844,7 +2747,7 @@
     }
 
     function updateTaskStatusDirect(taskId, newStatus) {
-      const target = mockTasks.find(t => t.TaskID === taskId) || (currentTasksData && currentTasksData.find(t => t.TaskID === taskId));
+      const target = (currentTasksData && currentTasksData.find(t => t.TaskID === taskId));
       if (!target) return;
 
       const payload = {
@@ -2873,7 +2776,11 @@
       google.script.run.withSuccessHandler(function(techs) {
         const techSelect = document.getElementById('taskTechSelect');
         if (!techSelect) return;
-        const list = (techs && techs.length) ? techs : mockUsers.filter(u => u.Role === 'Technician');
+        const list = Array.isArray(techs) ? techs : [];
+        if (list.length === 0) {
+          techSelect.innerHTML = `<option value="">Belum ada teknisi di Sheet Users</option>`;
+          return;
+        }
         techSelect.innerHTML = list.map(t => `<option value="${t.Name}" ${selectedTech && selectedTech === t.Name ? 'selected' : ''}>${t.Name} (${t.Email})</option>`).join('');
       }).getTechnicians();
     }
@@ -2883,7 +2790,6 @@
       document.getElementById('taskIdInput').value = '';
       document.getElementById('taskJobTypeSelect').value = 'Daily';
       document.getElementById('taskTitleInput').value = '';
-      document.getElementById('taskKlinikSelect').value = 'Klinik Utama Sehat';
       document.getElementById('taskDueDateInput').value = dueDateStr || new Date().toISOString().split('T')[0];
       document.getElementById('taskStatusSelect').value = 'Belum Selesai';
       document.getElementById('taskAttachmentInput').value = '';
@@ -2893,18 +2799,32 @@
 
       document.getElementById('lastUpdateDisplayContainer').classList.add('hidden');
       populateTaskTechnicianDropdown();
+      populateTaskLocationsDropdown();
       document.getElementById('modalTask').classList.remove('hidden');
+    }
+
+    function populateTaskLocationsDropdown() {
+      google.script.run.withSuccessHandler(function(assets) {
+        const assetList = Array.isArray(assets) ? assets : [];
+        const locSelect = document.getElementById('taskKlinikSelect');
+        if (!locSelect) return;
+
+        let locations = [...new Set(assetList.map(a => a.Location).filter(Boolean))];
+        if (locations.length === 0) {
+          locations = ['Klinik Utama', 'Data Center'];
+        }
+        locSelect.innerHTML = locations.map(l => `<option value="${l}">${l}</option>`).join('');
+      }).getAssets();
     }
 
     function openModalEditTask(taskId) {
       document.getElementById('taskModalTitle').innerText = 'Edit Work Order: ' + taskId;
-      const target = mockTasks.find(t => t.TaskID === taskId) || (currentTasksData && currentTasksData.find(t => t.TaskID === taskId));
+      const target = (currentTasksData && currentTasksData.find(t => t.TaskID === taskId));
 
       document.getElementById('taskIdInput').value = taskId;
       if (target) {
         document.getElementById('taskJobTypeSelect').value = target.JobType || 'Daily';
         document.getElementById('taskTitleInput').value = target.Title || '';
-        document.getElementById('taskKlinikSelect').value = target.Klinik || 'Klinik Utama Sehat';
         document.getElementById('taskDueDateInput').value = formatDateStr(target.DueDate);
         document.getElementById('taskStatusSelect').value = target.Status || 'Belum Selesai';
         document.getElementById('taskAttachmentInput').value = target.AttachmentUrl || '';
@@ -2933,6 +2853,7 @@
       }
 
       populateTaskTechnicianDropdown(target ? target.Technician : null);
+      populateTaskLocationsDropdown();
       document.getElementById('modalTask').classList.remove('hidden');
     }
 
@@ -2969,7 +2890,7 @@
       };
 
       google.script.run.withSuccessHandler(function(res) {
-        showToast(res.message);
+        showToast(res.message || 'Work Order Berhasil Disimpan!');
         closeModalTask();
         loadTasksTable();
         renderCalendar();
@@ -2977,8 +2898,9 @@
     }
 
     function deleteTaskItem(taskId) {
+      if (!confirm('Yakin ingin menghapus Work Order ini?')) return;
       google.script.run.withSuccessHandler(function(res) {
-        showToast(res.message);
+        showToast(res.message || 'Work Order Dihapus!');
         loadTasksTable();
         renderCalendar();
       }).deleteTask(taskId);
@@ -2986,15 +2908,21 @@
 
     function triggerManualTaskReminders() {
       google.script.run.withSuccessHandler(function(res) {
-        showToast(res.message);
+        showToast(res.message || 'Reminder terkirim!');
       }).checkAndSendTaskReminders();
     }
 
     function loadMasterChecklists() {
       google.script.run.withSuccessHandler(function(data) {
-        const lists = data || mockChecklists;
+        const lists = Array.isArray(data) ? data : [];
         const tbody = document.getElementById('checklistTableBody');
         if (!tbody) return;
+
+        if (lists.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 italic">Belum ada item checklist di sheet. Tambahkan checklist baru.</td></tr>`;
+          return;
+        }
+
         tbody.innerHTML = lists.map(c => `
           <tr class="hover:bg-slate-50 border-b border-slate-100">
             <td class="p-3 font-bold text-slate-700">${c.ChecklistID}</td>
@@ -3016,16 +2944,17 @@
 
     function loadExecutionChecklist(category) {
       google.script.run.withSuccessHandler(function(data) {
-        const items = data || mockChecklists.filter(c => c.Category === category);
+        const items = Array.isArray(data) ? data : [];
         const container = document.getElementById('executionChecklistContainer');
         if (!container) return;
         
         if (items.length === 0) {
-          container.innerHTML = `<p class="text-xs text-slate-400 italic">Tidak ada checklist untuk kategori ${category}</p>`;
+          container.innerHTML = `<p class="text-xs text-slate-400 italic py-2">Tidak ada checklist terdaftar untuk kategori ${category}</p>`;
+          updateChecklistProgress();
           return;
         }
 
-        container.innerHTML = items.map((item, idx) => `
+        container.innerHTML = items.map((item) => `
           <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
             <label class="flex items-start gap-3 cursor-pointer">
               <input type="checkbox" onchange="updateChecklistProgress()" class="mt-0.5 w-4 h-4 text-brand rounded border-slate-300 focus:ring-brand shrink-0">
@@ -3050,24 +2979,30 @@
 
     function loadAssetsTable() {
       google.script.run.withSuccessHandler(function(assets) {
-        const data = assets || mockAssets;
+        const data = Array.isArray(assets) ? assets : [];
         const tbody = document.getElementById('assetTableBody');
         if (!tbody) return;
+
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 italic">Belum ada inventaris aset IT di Sheet. Klik "+ Tambah Aset Baru" untuk menambahkan.</td></tr>`;
+          return;
+        }
+
         tbody.innerHTML = data.map(a => `
           <tr class="hover:bg-slate-50 border-b border-slate-100">
             <td class="p-3 font-bold text-slate-800">${a.AssetID}</td>
             <td class="p-3 font-semibold text-slate-700">${a.AssetName}</td>
             <td class="p-3"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[10px] font-bold">${a.Category}</span></td>
-            <td class="p-3 text-slate-600 font-medium">${a.Location || 'Data Center 1'}</td>
+            <td class="p-3 text-slate-600 font-medium">${a.Location || '-'}</td>
             <td class="p-3 text-slate-500">${a.Room || '-'}</td>
             <td class="p-3">
               <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${a.Status === 'Optimal' ? 'bg-emerald-100 text-emerald-700' : (a.Status === 'Needs Attention' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700')}">
                 ${a.Status}
               </span>
             </td>
-            <td class="p-3 font-medium text-amber-500">★ ${a.HealthRating || '4.5'}</td>
+            <td class="p-3 font-medium text-amber-500">★ ${a.HealthRating || '5.0'}</td>
             <td class="p-3 text-right space-x-1">
-              <button onclick="openModalEditAsset('${a.AssetID}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition" title="Edit Aset">
+              <button onclick="openModalEditAsset('${a.AssetID}', '${a.AssetName}', '${a.Category}', '${a.Location}', '${a.Room}', '${a.Status}', '${a.HealthRating}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition" title="Edit Aset">
                 <i class="fa-solid fa-pen-to-square"></i> Edit
               </button>
               <button onclick="inspectSpecificAsset('${a.AssetID}', '${a.Category}', '${a.Location}')" class="px-3 py-1 bg-brand text-white text-[11px] font-bold rounded-lg hover:bg-brand-dark transition shadow-sm">
@@ -3086,29 +3021,26 @@
       idInput.disabled = false;
       document.getElementById('assetNameInput').value = '';
       document.getElementById('assetCategorySelect').value = 'SERVER';
-      document.getElementById('assetLocationSelect').value = 'Data Center 1';
-      document.getElementById('assetRoomSelect').value = 'Rack 42, Slot A';
+      document.getElementById('assetLocationSelect').value = '';
+      document.getElementById('assetRoomSelect').value = '';
       document.getElementById('assetStatusSelect').value = 'Optimal';
       document.getElementById('assetRatingSelect').value = '5';
       document.getElementById('modalAsset').classList.remove('hidden');
     }
 
-    function openModalEditAsset(assetId) {
+    function openModalEditAsset(assetId, assetName, category, location, room, status, healthRating) {
       document.getElementById('assetModalTitle').innerText = 'Edit Data Aset IT: ' + assetId;
-      const target = mockAssets.find(a => a.AssetID === assetId);
-
       const idInput = document.getElementById('assetIdInput');
       idInput.value = assetId;
       idInput.disabled = true;
 
-      if (target) {
-        document.getElementById('assetNameInput').value = target.AssetName || '';
-        document.getElementById('assetCategorySelect').value = target.Category || 'SERVER';
-        document.getElementById('assetLocationSelect').value = target.Location || 'Data Center 1';
-        document.getElementById('assetRoomSelect').value = target.Room || 'Rack 42, Slot A';
-        document.getElementById('assetStatusSelect').value = target.Status || 'Optimal';
-        document.getElementById('assetRatingSelect').value = target.HealthRating || '5';
-      }
+      document.getElementById('assetNameInput').value = assetName || '';
+      document.getElementById('assetCategorySelect').value = category || 'SERVER';
+      document.getElementById('assetLocationSelect').value = location || '';
+      document.getElementById('assetRoomSelect').value = room || '';
+      document.getElementById('assetStatusSelect').value = status || 'Optimal';
+      document.getElementById('assetRatingSelect').value = healthRating || '5';
+
       document.getElementById('modalAsset').classList.remove('hidden');
     }
 
@@ -3138,7 +3070,7 @@
     function inspectSpecificAsset(assetId, category, location) {
       document.getElementById('targetAssetId').innerText = assetId;
       document.getElementById('targetAssetCat').innerText = category || 'SERVER';
-      document.getElementById('targetAssetLoc').innerText = location || 'Data Center 1';
+      document.getElementById('targetAssetLoc').innerText = location || '-';
       loadExecutionChecklist(category || 'SERVER');
       switchTab('execution');
     }
@@ -3150,14 +3082,14 @@
       removePhotoPreview('photoFileInput', 'photoFileGalleryInput', 'photoPreview', 'photoPreviewContainer');
       clearSignature();
 
-      const logs = (currentLogsData && currentLogsData.length) ? currentLogsData : mockLogs;
+      const logs = Array.isArray(currentLogsData) ? currentLogsData : [];
       const log = logs.find(l => l.TaskID === taskId);
 
       if (log) {
-        document.getElementById('targetAssetId').innerText = log.KodePeralatan || 'SRV-DC1-R42-01';
-        document.getElementById('targetAssetLoc').innerText = log.Lokasi || log.Klinik || 'Data Center 1';
+        document.getElementById('targetAssetId').innerText = log.KodePeralatan || '-';
+        document.getElementById('targetAssetLoc').innerText = log.Lokasi || log.Klinik || '-';
         document.getElementById('selectAssetStatus').value = log.StatusPerawatan || 'Optimal';
-        setRating(log.Checklist_Avg_Rating || 4);
+        setRating(log.Checklist_Avg_Rating || 5);
 
         if (log.Attachment) {
           const photoPreview = document.getElementById('photoPreview');
@@ -3309,7 +3241,7 @@
             loadDashboardData();
           } else {
             if (alertEl) {
-              alertEl.innerText = res.message || 'Login gagal';
+              alertEl.innerText = (res && res.message) ? res.message : 'Email atau password salah';
               alertEl.classList.remove('hidden');
             }
           }
@@ -3385,21 +3317,24 @@
       google.script.run.withSuccessHandler(function(techs) {
         const techSelect = document.getElementById('schedTechSelect');
         if (!techSelect) return;
-        const list = (techs && techs.length) ? techs : mockUsers.filter(u => u.Role === 'Technician');
+        const list = Array.isArray(techs) ? techs : [];
+        if (list.length === 0) {
+          techSelect.innerHTML = `<option value="">Belum ada teknisi di Sheet Users</option>`;
+          return;
+        }
         techSelect.innerHTML = list.map(t => `<option value="${t.Name}">${t.Name} (${t.Email})</option>`).join('');
       }).getTechnicians();
     }
 
     function populateScheduleLocationDropdown() {
       google.script.run.withSuccessHandler(function(assets) {
-        const assetList = assets || mockAssets;
+        const assetList = Array.isArray(assets) ? assets : [];
         const locationSelect = document.getElementById('schedKlinikSelect');
         if (!locationSelect) return;
 
         let locations = [...new Set(assetList.map(a => a.Location).filter(Boolean))];
-        
         if (locations.length === 0) {
-          locations = ['Data Center 1', 'Klinik Utama Sehat', 'Klinik Medika Pusat', 'Klinik Medika Barat', 'Klinik Husada Selatan'];
+          locations = ['Klinik Utama', 'Data Center'];
         }
 
         locationSelect.innerHTML = locations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
@@ -3416,8 +3351,10 @@
         const filtered = assetList.filter(a => a.Location === locVal);
         if (filtered.length > 0) {
           assetSelect.innerHTML = filtered.map(a => `<option value="${a.AssetID}">${a.AssetID} (${a.AssetName})</option>`).join('');
-        } else {
+        } else if (assetList.length > 0) {
           assetSelect.innerHTML = assetList.map(a => `<option value="${a.AssetID}">${a.AssetID} (${a.AssetName})</option>`).join('');
+        } else {
+          assetSelect.innerHTML = `<option value="">Belum ada aset di lokasi ini</option>`;
         }
       };
 
@@ -3425,7 +3362,7 @@
         filterAndPopulate(assets);
       } else {
         google.script.run.withSuccessHandler(function(fetchedAssets) {
-          filterAndPopulate(fetchedAssets || mockAssets);
+          filterAndPopulate(Array.isArray(fetchedAssets) ? fetchedAssets : []);
         }).getAssets();
       }
     }
@@ -3435,10 +3372,10 @@
     function handleNewSchedule(e) {
       e.preventDefault();
       const techSelect = document.getElementById('schedTechSelect');
-      const assignedTech = techSelect ? techSelect.value : 'Budi Teknisi';
+      const assignedTech = techSelect ? techSelect.value : '';
       const klinikSelect = document.getElementById('schedKlinikSelect');
-      const klinik = klinikSelect ? klinikSelect.value : 'Klinik Utama Sehat';
-      const assetId = document.getElementById('schedAssetSelect')?.value || 'SRV-DC1-R42-01';
+      const klinik = klinikSelect ? klinikSelect.value : '';
+      const assetId = document.getElementById('schedAssetSelect')?.value || '';
       const date = document.getElementById('scheduleDateInput')?.value || new Date().toISOString().split('T')[0];
 
       const payload = {
@@ -3452,7 +3389,7 @@
       };
 
       google.script.run.withSuccessHandler(function(res) {
-        showToast(`Jadwal Baru Berhasil Dibuat dan ditugaskan ke ${assignedTech}!`);
+        showToast(res.message || `Jadwal Baru Berhasil Dibuat!`);
         closeModalNewSchedule();
         loadDashboardData();
       }).submitMaintenanceLog(payload);
@@ -3470,7 +3407,7 @@
         showToast(res.message || 'Checklist berhasil ditambahkan');
         closeModalNewChecklist();
         loadMasterChecklists();
-        loadExecutionChecklist('SERVER');
+        loadExecutionChecklist(category);
       }).addChecklistItem({ category: category, description: description });
     }
 
@@ -3482,6 +3419,7 @@
     }
 
     function deleteChecklist(id) {
+      if (!confirm('Yakin ingin menghapus item checklist ini?')) return;
       google.script.run.withSuccessHandler(function(res) {
         showToast(res.message || 'Checklist berhasil dihapus');
         loadMasterChecklists();
@@ -3499,14 +3437,14 @@
       }
 
       try {
-        const taskId = currentActiveTaskId || 'TK-8492';
-        const assetId = document.getElementById('targetAssetId')?.innerText || 'SRV-DC1-R42-01';
-        const location = document.getElementById('targetAssetLoc')?.innerText || 'Data Center 1';
+        const taskId = currentActiveTaskId || ('TK-' + Math.floor(1000 + Math.random() * 9000));
+        const assetId = document.getElementById('targetAssetId')?.innerText || '-';
+        const location = document.getElementById('targetAssetLoc')?.innerText || '-';
         const status = document.getElementById('selectAssetStatus')?.value || 'Optimal';
         const reasonDelay = document.getElementById('selectReasonDelay')?.value || '';
         const ticketNumber = document.getElementById('inputTicketNumber')?.value || '';
         const photoImg = document.getElementById('photoPreview');
-        const technician = (currentUser && currentUser.name) ? currentUser.name : 'Budi Teknisi';
+        const technician = (currentUser && currentUser.name) ? currentUser.name : 'Teknisi';
 
         // Upload Foto ke Google Drive
         let attachmentUrl = '';
@@ -3578,14 +3516,14 @@
 
     // MODAL PDF REPORT PREVIEW & PRINT
     function openPDFReportModal() {
-      const taskId = currentActiveTaskId || 'TK-8492';
-      const logs = (currentLogsData && currentLogsData.length) ? currentLogsData : mockLogs;
+      const taskId = currentActiveTaskId || '-';
+      const logs = Array.isArray(currentLogsData) ? currentLogsData : [];
       const log = logs.find(l => l.TaskID === taskId) || {};
 
       document.getElementById('pdfTaskIdDisplay').innerText = '#' + taskId;
       document.getElementById('pdfDateDisplay').innerText = formatDateStr(log.Date) || new Date().toISOString().split('T')[0];
-      document.getElementById('pdfTechDisplay').innerText = log.Technician || (currentUser ? currentUser.name : 'Budi Teknisi');
-      document.getElementById('pdfAssetDisplay').innerText = (document.getElementById('targetAssetId')?.innerText || log.KodePeralatan || 'SRV-DC1-R42-01') + ' (' + (document.getElementById('targetAssetCat')?.innerText || 'SERVER') + ')';
+      document.getElementById('pdfTechDisplay').innerText = log.Technician || (currentUser ? currentUser.name : 'Teknisi');
+      document.getElementById('pdfAssetDisplay').innerText = (document.getElementById('targetAssetId')?.innerText || log.KodePeralatan || '-') + ' (' + (document.getElementById('targetAssetCat')?.innerText || 'ASSET') + ')';
       
       const status = document.getElementById('selectAssetStatus')?.value || log.StatusPerawatan || 'Optimal';
       document.getElementById('pdfStatus').innerText = status;
@@ -3604,7 +3542,7 @@
             </p>`;
           }).join('');
         } else {
-          summaryContainer.innerHTML = '<p class="text-[11px] text-slate-500 italic">[✓] Semua prosedur perawatan standar telah diverifikasi.</p>';
+          summaryContainer.innerHTML = '<p class="text-[11px] text-slate-500 italic">[✓] Prosedur perawatan telah diverifikasi.</p>';
         }
       }
 
@@ -3643,7 +3581,7 @@
       const email = document.getElementById('emailRecipient').value;
       const ccEmail = document.getElementById('emailCcRecipient').value;
       const notes = document.getElementById('emailNotes').value;
-      const taskId = currentActiveTaskId || 'TK-8492';
+      const taskId = currentActiveTaskId || 'TK-0000';
 
       if (!email) {
         showToast('Harap isi alamat email penerima!', true);
@@ -3670,8 +3608,8 @@
       const payload = {
         taskId: taskId,
         date: new Date().toISOString().split('T')[0],
-        technician: (currentUser && currentUser.name) ? currentUser.name : 'Budi Teknisi',
-        targetAsset: (document.getElementById('targetAssetId')?.innerText || 'SRV-DC1-R42-01') + ' (' + (document.getElementById('targetAssetCat')?.innerText || 'SERVER') + ')',
+        technician: (currentUser && currentUser.name) ? currentUser.name : 'Teknisi',
+        targetAsset: (document.getElementById('targetAssetId')?.innerText || '-') + ' (' + (document.getElementById('targetAssetCat')?.innerText || 'ASSET') + ')',
         checklistHtml: checklistHtml,
         status: document.getElementById('selectAssetStatus')?.value || 'Optimal',
         rating: currentRating || '5.0',
@@ -3727,6 +3665,9 @@
       const today = new Date().toISOString().split('T')[0];
       const schedDateInput = document.getElementById('scheduleDateInput');
       if (schedDateInput) schedDateInput.value = today;
+
+      const filterMonth = document.getElementById('filterMonth');
+      if (filterMonth) filterMonth.value = String(new Date().getMonth() + 1);
 
       window.addEventListener('resize', function() {
         if (signatureCanvas && document.getElementById('view-execution') && !document.getElementById('view-execution').classList.contains('hidden')) {
