@@ -192,15 +192,6 @@
       transform: scale(0.98);
     }
 
-    /* Thumbnail Hover Zoom */
-    .img-thumb-preview {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .img-thumb-preview:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
     @media print {
       body * { visibility: hidden; }
       #modalPdfReport, #modalPdfReport * { visibility: visible; }
@@ -330,26 +321,6 @@
           <i class="fa-solid fa-right-to-bracket"></i> Masuk Sistem
         </button>
       </form>
-    </div>
-  </div>
-
-  <!-- LIGHTBOX IMAGE MODAL (Untuk Melihat Gambar Lampiran Fullscreen) -->
-  <div id="modalImageLightbox" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 hidden z-[110] transition-opacity" onclick="closeImageLightbox()">
-    <div class="relative max-w-3xl w-full max-h-[90vh] flex flex-col items-center justify-center gap-3" onclick="event.stopPropagation()">
-      <div class="w-full flex justify-between items-center text-white px-2">
-        <span class="text-xs font-bold truncate" id="lightboxImageTitle">Lampiran Foto Pekerjaan</span>
-        <div class="flex items-center gap-3">
-          <a id="lightboxDriveLink" href="#" target="_blank" class="px-3 py-1 bg-brand hover:bg-brand-dark text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow transition">
-            <i class="fa-solid fa-up-right-from-square"></i> Buka Asli
-          </a>
-          <button onclick="closeImageLightbox()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition">
-            <i class="fa-solid fa-xmark text-lg"></i>
-          </button>
-        </div>
-      </div>
-      <div class="bg-black/40 p-2 rounded-2xl border border-white/10 max-h-[80vh] flex items-center justify-center overflow-hidden">
-        <img id="lightboxImageSrc" loading="lazy" src="" alt="Lampiran Foto" class="max-h-[75vh] max-w-full rounded-xl object-contain shadow-2xl">
-      </div>
     </div>
   </div>
 
@@ -682,7 +653,7 @@
       </div>
     </section>
 
-    <!-- VIEW 3: TUGASKU (WORK ORDERS) WITH KANBAN BOARD -->
+    <!-- VIEW 3: TUGASKU (WORK ORDERS) WITH KANBAN BOARD & MONTH FILTER/TOGGLE -->
     <section id="view-tasks" class="space-y-5 sm:space-y-6 hidden">
       <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 custom-shadow space-y-4 sm:space-y-6">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -690,7 +661,7 @@
             <h3 class="font-bold text-slate-800 text-base sm:text-lg flex items-center gap-2">
               <i class="fa-solid fa-clipboard-list text-brand"></i> Daftar Tugas & Work Orders
             </h3>
-            <p class="text-xs text-slate-400">Kelola status tugas via drag & drop Kanban atau tabel interaktif.</p>
+            <p class="text-xs text-slate-400">Kelola status tugas via drag & drop Kanban atau tabel interaktif per bulan.</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
@@ -716,13 +687,47 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between gap-2 overflow-x-auto">
-          <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl text-xs font-semibold overflow-x-auto">
-            <button id="btnTaskFilterAll" onclick="filterTasksView('ALL')" class="px-3 py-1.5 rounded-lg bg-brand text-white shadow-sm shrink-0">Semua Tugas</button>
-            <button id="btnTaskFilterPending" onclick="filterTasksView('Belum Selesai')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 shrink-0">Belum Selesai</button>
-            <button id="btnTaskFilterDone" onclick="filterTasksView('Selesai')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 shrink-0">Selesai / Closed</button>
+        <!-- Filter Bar: Status & Pemilih Bulan / Tahun (+/- Per Bulan) -->
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
+          <div class="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto">
+            <button id="btnTaskFilterAll" onclick="filterTasksView('ALL')" class="px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-bold shadow-sm shrink-0">Semua Status</button>
+            <button id="btnTaskFilterPending" onclick="filterTasksView('Belum Selesai')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-800 bg-white border border-slate-200 text-xs font-bold shrink-0">Belum Selesai</button>
+            <button id="btnTaskFilterDone" onclick="filterTasksView('Selesai')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-800 bg-white border border-slate-200 text-xs font-bold shrink-0">Selesai / Closed</button>
           </div>
-          <p class="text-[11px] text-slate-400 font-medium hidden sm:block"><i class="fa-solid fa-hand-pointer mr-1"></i>Klik kartu atau geser di Kanban untuk detail / ubah status</p>
+
+          <!-- Pengatur Bulan & Tahun Kanban (+ / - Bulan) -->
+          <div class="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 shadow-sm text-xs font-bold w-full md:w-auto justify-between md:justify-end">
+            <button onclick="changeKanbanMonth(-1)" class="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-lg transition" title="Bulan Sebelumnya (-)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <select id="kanbanMonthSelect" onchange="applyKanbanMonthFilter()" class="bg-transparent text-xs font-extrabold text-slate-800 px-1 py-1 focus:outline-none cursor-pointer">
+              <option value="ALL">Semua Bulan</option>
+              <option value="1">Januari</option>
+              <option value="2">Februari</option>
+              <option value="3">Maret</option>
+              <option value="4">April</option>
+              <option value="5">Mei</option>
+              <option value="6">Juni</option>
+              <option value="7">Juli</option>
+              <option value="8" selected>Agustus</option>
+              <option value="9">September</option>
+              <option value="10">Oktober</option>
+              <option value="11">November</option>
+              <option value="12">Desember</option>
+            </select>
+
+            <select id="kanbanYearSelect" onchange="applyKanbanMonthFilter()" class="bg-transparent text-xs font-extrabold text-slate-800 px-1 py-1 focus:outline-none cursor-pointer">
+              <option value="ALL">Semua</option>
+              <option value="2025">2025</option>
+              <option value="2026" selected>2026</option>
+              <option value="2027">2027</option>
+            </select>
+
+            <button onclick="changeKanbanMonth(1)" class="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-100 rounded-lg transition" title="Bulan Berikutnya (+)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
         </div>
 
         <!-- KANBAN BOARD VIEW -->
@@ -777,7 +782,7 @@
               <tr>
                 <th class="p-3">Task ID</th>
                 <th class="p-3">Tipe & Pekerjaan</th>
-                <th class="p-3">Lampiran Foto</th>
+                <th class="p-3">Lampiran File</th>
                 <th class="p-3">Klinik / Lokasi</th>
                 <th class="p-3">Teknisi</th>
                 <th class="p-3">Tenggat Waktu</th>
@@ -846,11 +851,11 @@
         </div>
       </div>
 
-      <!-- Bukti Pekerjaan Photo Upload with Direct Mobile Camera Capture -->
+      <!-- Bukti Pekerjaan Photo Upload with Fast Client Compression & Direct Camera -->
       <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 custom-shadow space-y-3">
         <div class="bg-slate-50 -m-4 sm:-m-5 p-3.5 sm:p-4 rounded-t-2xl border-b border-slate-100 flex justify-between items-center">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Pekerjaan (Photo)</span>
-          <span class="text-[10px] text-brand font-bold bg-brand/10 px-2 py-0.5 rounded">Camera & Gallery</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Pekerjaan (Photo / Attachment)</span>
+          <span class="text-[10px] text-brand font-bold bg-brand/10 px-2 py-0.5 rounded">Fast Auto-Compress</span>
         </div>
         
         <div class="pt-2 space-y-3">
@@ -859,28 +864,32 @@
             <label class="p-3 bg-brand hover:bg-brand-dark text-white rounded-xl flex flex-col items-center justify-center cursor-pointer shadow-md transition text-center">
               <i class="fa-solid fa-camera text-xl mb-1"></i>
               <span class="text-xs font-bold">Ambil Foto (Kamera)</span>
-              <input type="file" id="photoFileInput" accept="image/*" capture="environment" class="hidden" onchange="previewImage(this, 'photoPreview', 'photoPreviewContainer')">
+              <input type="file" id="photoFileInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageSelection(this, 'photoPreview', 'photoPreviewContainer')">
             </label>
 
             <label class="p-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl flex flex-col items-center justify-center cursor-pointer border border-slate-200 transition text-center">
               <i class="fa-solid fa-images text-xl mb-1 text-slate-500"></i>
               <span class="text-xs font-bold">Pilih dari Galeri</span>
-              <input type="file" id="photoFileGalleryInput" accept="image/*" class="hidden" onchange="previewImage(this, 'photoPreview', 'photoPreviewContainer')">
+              <input type="file" id="photoFileGalleryInput" accept="image/*" class="hidden" onchange="handleImageSelection(this, 'photoPreview', 'photoPreviewContainer')">
             </label>
           </div>
 
-          <!-- Preview Container -->
+          <!-- Preview Container saat upload -->
           <div id="photoPreviewContainer" class="relative max-w-xs mx-auto hidden space-y-2">
-            <img id="photoPreview" loading="lazy" class="rounded-xl max-h-48 w-full object-cover border border-slate-200 shadow-sm cursor-pointer" onclick="openLightboxFromImg(this, 'Bukti Pekerjaan Maintenance')">
-            <div class="flex items-center justify-between">
-              <button type="button" onclick="openLightboxFromImg(document.getElementById('photoPreview'), 'Bukti Pekerjaan')" class="text-xs text-brand font-bold hover:underline flex items-center gap-1">
-                <i class="fa-solid fa-magnifying-glass-plus"></i> Perbesar Foto
-              </button>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 overflow-hidden">
+                <i class="fa-solid fa-image text-brand text-lg"></i>
+                <div class="overflow-hidden">
+                  <p class="text-xs font-bold text-slate-700 truncate" id="photoPreviewFileName">Foto Terpilih</p>
+                  <p class="text-[10px] text-emerald-600 font-semibold" id="photoCompressionStatus">Terkonversi Siap Upload</p>
+                </div>
+              </div>
               <button type="button" onclick="removePhotoPreview('photoFileInput', 'photoFileGalleryInput', 'photoPreview', 'photoPreviewContainer')" 
-                      class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                      class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-bold transition flex items-center gap-1 shrink-0">
                 <i class="fa-solid fa-trash"></i> Hapus
               </button>
             </div>
+            <img id="photoPreview" class="hidden" alt="Preview Image">
           </div>
         </div>
       </div>
@@ -1120,35 +1129,36 @@
           </div>
         </div>
 
-        <!-- Foto Bukti / Dokumentasi Task with Direct Camera Capture -->
+        <!-- Foto Bukti / Dokumentasi Task with Direct Camera Capture & Fast Client Compression -->
         <div>
           <label class="block font-semibold text-slate-600 mb-1.5">Foto Bukti / Dokumentasi</label>
           <div class="grid grid-cols-2 gap-2">
             <label class="p-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-xl flex items-center justify-center gap-2 cursor-pointer transition text-xs font-bold">
               <i class="fa-solid fa-camera text-base text-brand"></i>
               <span>Buka Kamera</span>
-              <input type="file" id="taskPhotoFileInput" accept="image/*" capture="environment" class="hidden" onchange="previewImage(this, 'taskPhotoPreview', 'taskPhotoContainer')">
+              <input type="file" id="taskPhotoFileInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageSelection(this, 'taskPhotoPreview', 'taskPhotoContainer')">
             </label>
 
             <label class="p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl flex items-center justify-center gap-2 cursor-pointer transition text-xs font-bold">
               <i class="fa-solid fa-folder-open text-base text-slate-500"></i>
               <span>Dari Galeri</span>
-              <input type="file" id="taskPhotoGalleryInput" accept="image/*" class="hidden" onchange="previewImage(this, 'taskPhotoPreview', 'taskPhotoContainer')">
+              <input type="file" id="taskPhotoGalleryInput" accept="image/*" class="hidden" onchange="handleImageSelection(this, 'taskPhotoPreview', 'taskPhotoContainer')">
             </label>
           </div>
 
-          <!-- Preview Container -->
-          <div id="taskPhotoContainer" class="relative mt-2 hidden space-y-2">
-            <img id="taskPhotoPreview" loading="lazy" class="rounded-lg max-h-36 w-full object-cover border border-slate-200 cursor-pointer" onclick="openLightboxFromImg(this, 'Lampiran Work Order')">
-            <div class="flex items-center justify-between text-[11px]">
-              <button type="button" onclick="openLightboxFromImg(document.getElementById('taskPhotoPreview'), 'Lampiran Work Order')" class="text-brand font-bold hover:underline flex items-center gap-1">
-                <i class="fa-solid fa-magnifying-glass-plus"></i> Lihat Penuh
-              </button>
+          <!-- Preview File Info saat Upload -->
+          <div id="taskPhotoContainer" class="relative mt-2 hidden">
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2 overflow-hidden">
+                <i class="fa-solid fa-file-image text-brand"></i>
+                <span class="font-bold text-slate-700 truncate" id="taskPhotoInfoText">Foto Terpilih</span>
+              </div>
               <button type="button" onclick="removePhotoPreview('taskPhotoFileInput', 'taskPhotoGalleryInput', 'taskPhotoPreview', 'taskPhotoContainer')" 
                       class="text-red-600 font-bold hover:underline">
-                <i class="fa-solid fa-xmark mr-1"></i> Hapus Foto
+                <i class="fa-solid fa-xmark mr-1"></i> Hapus
               </button>
             </div>
+            <img id="taskPhotoPreview" class="hidden" alt="Task Preview">
           </div>
         </div>
 
@@ -1162,7 +1172,7 @@
           <textarea id="taskDescInput" rows="2" placeholder="Sebutkan detail perbaikan atau alat yang dibutuhkan..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand"></textarea>
         </div>
 
-        <button type="submit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow mt-2">
+        <button type="submit" id="btnSaveTaskSubmit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow mt-2">
           Simpan Data Work Order
         </button>
       </form>
@@ -1348,18 +1358,21 @@
           </div>
         </div>
 
-        <!-- Lampiran Foto Bukti di PDF Preview -->
+        <!-- Lampiran Link Foto Bukti di PDF Preview -->
         <div id="pdfPhotoSection" class="hidden">
-          <p class="font-bold text-slate-700 mb-1">Foto Bukti Pekerjaan:</p>
-          <div class="bg-white p-2 border border-slate-200 rounded-lg text-center">
-            <img id="pdfPhotoImg" loading="lazy" class="max-h-40 mx-auto object-contain rounded-lg" alt="Bukti Foto">
+          <p class="font-bold text-slate-700 mb-1">File Dokumen / Foto Bukti:</p>
+          <div class="bg-white p-3 border border-slate-200 rounded-lg flex items-center justify-between">
+            <span class="text-[11px] text-slate-600 font-semibold truncate" id="pdfPhotoLinkText">Terlampir di Google Drive</span>
+            <a id="pdfPhotoDirectLink" href="#" target="_blank" class="px-3 py-1 bg-brand text-white font-bold text-[10px] rounded-lg shadow-sm hover:bg-brand-dark transition shrink-0 flex items-center gap-1">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka File
+            </a>
           </div>
         </div>
 
         <div>
           <p class="font-bold text-slate-700 mb-1">Tanda Tangan Validasi:</p>
           <div class="bg-white p-2 border border-slate-200 rounded-lg text-center">
-            <img id="pdfSignatureImg" loading="lazy" class="h-16 sm:h-20 mx-auto object-contain hidden" alt="Signature">
+            <img id="pdfSignatureImg" class="h-16 sm:h-20 mx-auto object-contain hidden" alt="Signature">
             <p id="pdfSignaturePlaceholder" class="text-xs text-slate-400 italic py-3">[ Tanda Tangan Terlampir ]</p>
           </div>
         </div>
@@ -1406,6 +1419,15 @@
     // KONFIGURASI BACKEND GOOGLE APPS SCRIPT (REST API LIVE)
     // =========================================================================
     var GAS_BACKEND_URL = "https://script.google.com/a/macros/fdcdentalclinic.co.id/s/AKfycbyG4bQql49IVq5pRUOgXdQKoRrh4VczvBb40fyJCyXF8k3FlIr9j2_I7rFz_LgY7I31/exec";
+
+    // Cache Data in Memory untuk Akses Super Cepat & Responsive
+    var inMemoryCache = {
+      logs: null,
+      tasks: null,
+      assets: null,
+      checklists: null,
+      techs: null
+    };
 
     // Client Fetcher ke Google Apps Script Backend (CORS / Redirect-Proof)
     async function callGasBackend(action, data = {}) {
@@ -1475,7 +1497,7 @@
     // Service Worker Registration for PWA
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'jadwalinhw-github-live-v2';
+        const CACHE_NAME = 'jadwalinhw-github-live-v3';
         const ASSETS_TO_CACHE = [
           'https://cdn.tailwindcss.com',
           'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
@@ -1526,6 +1548,11 @@
     var isBulkMode = false;
     var selectedBulkTaskIds = [];
 
+    // Kanban Month Filter & Accordion State
+    var selectedKanbanMonth = String(new Date().getMonth() + 1); // Bulan ini default
+    var selectedKanbanYear = String(new Date().getFullYear());
+    var collapsedKanbanMonths = {}; // { "2026-08": true/false }
+
     var calendarDisplayMode = 'agenda';
     var taskDisplayMode = 'kanban';
     var draggedTaskId = null;
@@ -1544,22 +1571,73 @@
     };
     var google = window.google;
 
-    // FOTO PREVIEW & LIGHTBOX HELPERS
-    function previewImage(input, previewId, containerId = null) {
-      if (input.files && input.files[0]) {
+    // =========================================================================
+    // FAST CLIENT-SIDE IMAGE COMPRESSION (Max 1200px, Web-Optimized JPEG)
+    // Mengubah foto kamera HP 10MB menjadi ~150KB dalam hitungan milidetik
+    // =========================================================================
+    function compressImageFile(file, maxDimension = 1200, quality = 0.75) {
+      return new Promise((resolve, reject) => {
+        if (!file) {
+          resolve('');
+          return;
+        }
         const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = document.getElementById(previewId);
-          if (img) {
-            img.src = e.target.result;
-            img.classList.remove('hidden');
-          }
-          if (containerId) {
-            const container = document.getElementById(containerId);
-            if (container) container.classList.remove('hidden');
-          }
+        reader.onerror = () => reject(new Error('Gagal membaca file'));
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onerror = () => reject(new Error('Format gambar tidak didukung'));
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+            if (width > maxDimension || height > maxDimension) {
+              if (width > height) {
+                height = Math.round((height * maxDimension) / width);
+                width = maxDimension;
+              } else {
+                width = Math.round((width * maxDimension) / height);
+                height = maxDimension;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(dataUrl);
+          };
+          img.src = e.target.result;
         };
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleImageSelection(input, previewImgId, containerId) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const statusEl = document.getElementById('photoCompressionStatus');
+        if (statusEl) statusEl.innerText = 'Mengompresi gambar...';
+
+        try {
+          const compressedDataUrl = await compressImageFile(file, 1200, 0.75);
+          const previewImg = document.getElementById(previewImgId);
+          if (previewImg) {
+            previewImg.src = compressedDataUrl;
+          }
+          const container = document.getElementById(containerId);
+          if (container) {
+            container.classList.remove('hidden');
+          }
+          if (statusEl) statusEl.innerText = 'Siap Unggah (Ukuran Dioptimalkan)';
+          
+          const nameEl = document.getElementById('photoPreviewFileName');
+          if (nameEl) nameEl.innerText = file.name || 'Foto Kamera';
+          
+          const taskInfo = document.getElementById('taskPhotoInfoText');
+          if (taskInfo) taskInfo.innerText = (file.name || 'Foto Kamera') + ' (Optimized)';
+        } catch (err) {
+          console.warn('Compress failed, fallback to raw', err);
+        }
       }
     }
 
@@ -1573,33 +1651,8 @@
       if (galInput) galInput.value = '';
       if (previewImg) {
         previewImg.src = '';
-        previewImg.classList.add('hidden');
       }
       if (container) container.classList.add('hidden');
-    }
-
-    function openImageLightbox(url, title = 'Lampiran Foto') {
-      if (!url) return;
-      const modal = document.getElementById('modalImageLightbox');
-      const img = document.getElementById('lightboxImageSrc');
-      const titleEl = document.getElementById('lightboxImageTitle');
-      const linkEl = document.getElementById('lightboxDriveLink');
-
-      if (img) img.src = url;
-      if (titleEl) titleEl.innerText = title;
-      if (linkEl) linkEl.href = url;
-      if (modal) modal.classList.remove('hidden');
-    }
-
-    function openLightboxFromImg(imgEl, title) {
-      if (imgEl && imgEl.src) {
-        openImageLightbox(imgEl.src, title || 'Foto Bukti Pekerjaan');
-      }
-    }
-
-    function closeImageLightbox() {
-      const modal = document.getElementById('modalImageLightbox');
-      if (modal) modal.classList.add('hidden');
     }
 
     // ROLE ACCESS CONTROLLER
@@ -1638,10 +1691,11 @@
           }
 
           currentLogsData = data;
+          inMemoryCache.logs = data;
           applyDashboardAnalytics();
+          loadTasksTable();
           loadAssetsTable();
           loadMasterChecklists();
-          loadTasksTable();
           loadExecutionChecklist('SERVER');
           
           const subTitle = document.getElementById('dashSubTitle');
@@ -1663,7 +1717,7 @@
     window.loadDashboardData = loadDashboardData;
 
     function refreshCurrentView(viewName) {
-      showToast('Memperbarui data dari Google Sheets...');
+      showToast('Memperbarui data...');
       if (viewName === 'dashboard' || viewName === 'calendar') {
         loadDashboardData();
       } else if (viewName === 'tasks') {
@@ -1949,10 +2003,9 @@
             <p class="text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>${s.Lokasi || '-'}</p>
 
             ${s.Attachment ? `
-              <div class="flex items-center gap-2 pt-1" onclick="event.stopPropagation()">
-                <img loading="lazy" src="${s.Attachment}" alt="Foto Bukti" class="w-12 h-12 object-cover rounded-lg border border-slate-200 cursor-pointer img-thumb-preview" onclick="openImageLightbox('${s.Attachment}', 'Foto Maintenance #${s.TaskID}')">
-                <a href="${s.Attachment}" target="_blank" class="text-[10px] text-brand hover:underline font-bold flex items-center gap-1">
-                  <i class="fa-solid fa-paperclip"></i> Link Foto
+              <div class="pt-1" onclick="event.stopPropagation()">
+                <a href="${s.Attachment}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-brand/10 text-brand text-[10px] font-bold rounded-lg transition border border-slate-200">
+                  <i class="fa-solid fa-paperclip"></i> Lihat File Lampiran
                 </a>
               </div>
             ` : ''}
@@ -2080,10 +2133,9 @@
             <p class="text-slate-700 font-semibold truncate">${t.Title}</p>
 
             ${t.PhotoUrl ? `
-              <div class="flex items-center gap-2 pt-1" onclick="event.stopPropagation()">
-                <img loading="lazy" src="${t.PhotoUrl}" alt="Foto WO" class="w-12 h-12 object-cover rounded-lg border border-slate-200 cursor-pointer img-thumb-preview" onclick="openImageLightbox('${t.PhotoUrl}', 'Foto Work Order #${t.TaskID}')">
-                <a href="${t.PhotoUrl}" target="_blank" class="text-[10px] text-brand hover:underline font-bold flex items-center gap-1">
-                  <i class="fa-solid fa-image"></i> Link Foto
+              <div class="pt-1" onclick="event.stopPropagation()">
+                <a href="${t.PhotoUrl}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-brand/10 text-brand text-[10px] font-bold rounded-lg transition border border-slate-200">
+                  <i class="fa-solid fa-paperclip"></i> Lihat File Lampiran
                 </a>
               </div>
             ` : ''}
@@ -2548,10 +2600,9 @@
                 </div>
 
                 ${e.attachment ? `
-                  <div class="flex items-center gap-2 pt-1" onclick="event.stopPropagation()">
-                    <img loading="lazy" src="${e.attachment}" alt="Lampiran" class="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer img-thumb-preview" onclick="openImageLightbox('${e.attachment}', 'Lampiran Agenda #${e.taskId}')">
-                    <a href="${e.attachment}" target="_blank" class="text-[11px] text-brand hover:underline font-bold flex items-center gap-1">
-                      <i class="fa-solid fa-image"></i> Lihat Foto
+                  <div class="pt-1" onclick="event.stopPropagation()">
+                    <a href="${e.attachment}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-brand/10 text-brand text-[10px] font-bold rounded-lg transition border border-slate-200">
+                      <i class="fa-solid fa-paperclip"></i> Lihat File Lampiran
                     </a>
                   </div>
                 ` : ''}
@@ -2703,6 +2754,7 @@
         }
 
         currentTasksData = list;
+        inMemoryCache.tasks = list;
         renderTasksList(activeTaskFilter);
       }).getTasks(userRole, userName);
     }
@@ -2713,14 +2765,53 @@
       const btnPending = document.getElementById('btnTaskFilterPending');
       const btnDone = document.getElementById('btnTaskFilterDone');
 
-      const activeCls = 'px-3 py-1.5 rounded-lg bg-brand text-white shadow-sm shrink-0';
-      const inactiveCls = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 shrink-0';
+      const activeCls = 'px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-bold shadow-sm shrink-0';
+      const inactiveCls = 'px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-800 bg-white border border-slate-200 text-xs font-bold shrink-0';
 
       if (btnAll) btnAll.className = status === 'ALL' ? activeCls : inactiveCls;
       if (btnPending) btnPending.className = status === 'Belum Selesai' ? activeCls : inactiveCls;
       if (btnDone) btnDone.className = status === 'Selesai' ? activeCls : inactiveCls;
 
       renderTasksList(status);
+    }
+
+    // PENGATUR BULAN KANBAN (+ / - BULAN)
+    function changeKanbanMonth(delta) {
+      const mSelect = document.getElementById('kanbanMonthSelect');
+      const ySelect = document.getElementById('kanbanYearSelect');
+      if (!mSelect || !ySelect) return;
+
+      let currentM = mSelect.value === 'ALL' ? (new Date().getMonth() + 1) : parseInt(mSelect.value);
+      let currentY = ySelect.value === 'ALL' ? new Date().getFullYear() : parseInt(ySelect.value);
+
+      currentM += delta;
+      if (currentM < 1) {
+        currentM = 12;
+        currentY--;
+      } else if (currentM > 12) {
+        currentM = 1;
+        currentY++;
+      }
+
+      mSelect.value = String(currentM);
+      ySelect.value = String(currentY);
+      selectedKanbanMonth = String(currentM);
+      selectedKanbanYear = String(currentY);
+
+      renderTasksList(activeTaskFilter);
+    }
+
+    function applyKanbanMonthFilter() {
+      const mSelect = document.getElementById('kanbanMonthSelect');
+      const ySelect = document.getElementById('kanbanYearSelect');
+      if (mSelect) selectedKanbanMonth = mSelect.value;
+      if (ySelect) selectedKanbanYear = ySelect.value;
+      renderTasksList(activeTaskFilter);
+    }
+
+    function toggleKanbanMonthAccordion(monthKey) {
+      collapsedKanbanMonths[monthKey] = !collapsedKanbanMonths[monthKey];
+      renderTasksList(activeTaskFilter);
     }
 
     function renderTasksList(filterStatus = 'ALL') {
@@ -2732,13 +2823,29 @@
         list = list.filter(t => t.Status === 'Selesai / Closed' || t.Status === 'Selesai');
       }
 
+      // Filter per Bulan & Tahun yang dipilih di Kanban
+      if (selectedKanbanYear && selectedKanbanYear !== 'ALL') {
+        list = list.filter(t => {
+          const dStr = formatDateStr(t.DueDate);
+          return dStr && dStr.startsWith(selectedKanbanYear);
+        });
+      }
+
+      if (selectedKanbanMonth && selectedKanbanMonth !== 'ALL') {
+        const mStr = String(selectedKanbanMonth).padStart(2, '0');
+        list = list.filter(t => {
+          const parts = formatDateStr(t.DueDate).split('-');
+          return parts.length === 3 && parts[1] === mStr;
+        });
+      }
+
       renderKanbanBoard(list);
 
       const tbody = document.getElementById('taskTableBody');
       if (!tbody) return;
 
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-400 italic">Belum ada data Work Order di sheet. Klik "+ Work Order" untuk menambahkan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-400 italic">Tidak ada Work Order pada filter bulan ini. Klik "+ Work Order" untuk menambahkan.</td></tr>`;
         return;
       }
 
@@ -2768,12 +2875,13 @@
             </td>
             <td class="p-3" onclick="event.stopPropagation()">
               ${t.PhotoUrl ? `
-                <div class="flex items-center gap-2">
-                  <img loading="lazy" src="${t.PhotoUrl}" alt="Foto" class="w-9 h-9 object-cover rounded-lg border border-slate-200 cursor-pointer img-thumb-preview" onclick="openImageLightbox('${t.PhotoUrl}', 'Foto Work Order #${t.TaskID}')">
-                  <a href="${t.PhotoUrl}" target="_blank" class="text-[10px] text-brand hover:underline font-bold"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-                </div>
+                <a href="${t.PhotoUrl}" target="_blank" class="inline-flex items-center gap-1 text-[11px] text-brand hover:underline font-bold">
+                  <i class="fa-solid fa-paperclip"></i> File Asli
+                </a>
               ` : (t.AttachmentUrl ? `
-                <a href="${t.AttachmentUrl}" target="_blank" class="text-[10px] text-brand hover:underline font-bold inline-flex items-center gap-1"><i class="fa-solid fa-paperclip"></i> Link File</a>
+                <a href="${t.AttachmentUrl}" target="_blank" class="inline-flex items-center gap-1 text-[11px] text-brand hover:underline font-bold">
+                  <i class="fa-solid fa-link"></i> Link File
+                </a>
               ` : '<span class="text-[10px] text-slate-300 italic">-</span>')}
             </td>
             <td class="p-3 text-slate-600">${t.Klinik}</td>
@@ -2817,7 +2925,7 @@
         return `
           <div draggable="true" ondragstart="handleDragStart(event, '${t.TaskID}')" ondragend="handleDragEnd(event)" 
                onclick="openModalEditTask('${t.TaskID}')"
-               class="kanban-card bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md cursor-pointer active:cursor-grabbing transition space-y-2.5 hover:border-brand/50">
+               class="kanban-card bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md cursor-pointer active:cursor-grabbing transition space-y-2 hover:border-brand/50">
             <div class="flex items-center justify-between">
               <span class="font-extrabold text-slate-800 text-xs flex items-center gap-1">
                 <i class="fa-solid fa-grip-vertical text-slate-300 mr-1 text-xs"></i> #${t.TaskID}
@@ -2827,26 +2935,23 @@
 
             <div>
               <p class="font-bold text-slate-800 text-xs leading-snug">${t.Title}</p>
-              <p class="text-[11px] text-slate-500 mt-1"><i class="fa-solid fa-building text-slate-400 mr-1"></i>${t.Klinik}</p>
+              <p class="text-[11px] text-slate-500 mt-0.5"><i class="fa-solid fa-building text-slate-400 mr-1"></i>${t.Klinik}</p>
             </div>
 
             ${t.PhotoUrl ? `
-              <div class="pt-1" onclick="event.stopPropagation()">
-                <div class="relative group rounded-xl overflow-hidden border border-slate-200">
-                  <img loading="lazy" src="${t.PhotoUrl}" alt="Foto WO" class="h-28 w-full object-cover cursor-pointer img-thumb-preview" onclick="openImageLightbox('${t.PhotoUrl}', 'Foto Work Order #${t.TaskID}')">
-                  <a href="${t.PhotoUrl}" target="_blank" class="absolute bottom-1 right-1 bg-black/60 hover:bg-black/80 text-white text-[9px] px-2 py-0.5 rounded-md font-bold flex items-center gap-1 shadow">
-                    <i class="fa-solid fa-link"></i> Link
-                  </a>
-                </div>
+              <div class="pt-0.5" onclick="event.stopPropagation()">
+                <a href="${t.PhotoUrl}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-lg border border-emerald-200 transition">
+                  <i class="fa-solid fa-paperclip"></i> Buka File Asli
+                </a>
               </div>
             ` : ''}
 
-            <div class="flex items-center justify-between text-[10px] text-slate-400 pt-2 border-t border-slate-100">
+            <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1.5 border-t border-slate-100">
               <span>Teknisi: <strong class="text-slate-700">${t.Technician || '-'}</strong></span>
               <span class="font-semibold ${t.Status !== 'Selesai / Closed' && formatDateStr(t.DueDate) < new Date().toISOString().split('T')[0] ? 'text-red-600 font-bold' : ''}">${formatDateStr(t.DueDate)}</span>
             </div>
 
-            <div class="flex items-center justify-between gap-1 pt-1">
+            <div class="flex items-center justify-between gap-1 pt-0.5">
               <div class="flex items-center gap-1">
                 ${t.Status !== 'Belum Selesai' ? `<button onclick="event.stopPropagation(); updateTaskStatusDirect('${t.TaskID}', 'Belum Selesai')" class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[9px] font-bold hover:bg-red-200 transition" title="Pindah ke Belum Selesai">← Belum</button>` : ''}
                 ${t.Status !== 'Dalam Proses' ? `<button onclick="event.stopPropagation(); updateTaskStatusDirect('${t.TaskID}', 'Dalam Proses')" class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded text-[9px] font-bold hover:bg-amber-200 transition" title="Pindah ke Dalam Proses">Proses</button>` : ''}
@@ -2858,9 +2963,9 @@
         `;
       }
 
-      colPending.innerHTML = pendingList.length ? pendingList.map(buildKanbanCard).join('') : '<p class="text-slate-400 text-xs italic text-center py-4">Kosong</p>';
-      colInProgress.innerHTML = inProgressList.length ? inProgressList.map(buildKanbanCard).join('') : '<p class="text-slate-400 text-xs italic text-center py-4">Kosong</p>';
-      colDone.innerHTML = doneList.length ? doneList.map(buildKanbanCard).join('') : '<p class="text-slate-400 text-xs italic text-center py-4">Kosong</p>';
+      colPending.innerHTML = pendingList.length ? pendingList.map(buildKanbanCard).join('') : '<p class="text-slate-400 text-xs italic text-center py-4">Tidak ada task pada bulan ini</p>';
+      colInProgress.innerHTML = inProgressList.length ? inProgressList.map(buildKanbanCard).join('') : '<p class="text-slate-400 text-xs italic text-center py-4">Tidak ada task pada bulan ini</p>';
+      colDone.innerHTML = doneList.length ? doneList.map(buildKanbanCard).join('') : '<p class="text-slate-400 text-xs italic text-center py-4">Tidak ada task pada bulan ini</p>';
     }
 
     function handleDragStart(e, taskId) {
@@ -2918,7 +3023,15 @@
     }
 
     function populateTaskTechnicianDropdown(selectedTech = null) {
+      if (inMemoryCache.techs) {
+        fillTechSelect(inMemoryCache.techs);
+      }
       google.script.run.withSuccessHandler(function(techs) {
+        inMemoryCache.techs = techs;
+        fillTechSelect(techs);
+      }).getTechnicians();
+
+      function fillTechSelect(techs) {
         const techSelect = document.getElementById('taskTechSelect');
         if (!techSelect) return;
         const list = Array.isArray(techs) ? techs : [];
@@ -2927,7 +3040,7 @@
           return;
         }
         techSelect.innerHTML = list.map(t => `<option value="${t.Name}" ${selectedTech && selectedTech === t.Name ? 'selected' : ''}>${t.Name} (${t.Email})</option>`).join('');
-      }).getTechnicians();
+      }
     }
 
     function openModalNewTask(dueDateStr = null) {
@@ -2949,7 +3062,15 @@
     }
 
     function populateTaskLocationsDropdown() {
+      if (inMemoryCache.assets) {
+        fillLocSelect(inMemoryCache.assets);
+      }
       google.script.run.withSuccessHandler(function(assets) {
+        inMemoryCache.assets = assets;
+        fillLocSelect(assets);
+      }).getAssets();
+
+      function fillLocSelect(assets) {
         const assetList = Array.isArray(assets) ? assets : [];
         const locSelect = document.getElementById('taskKlinikSelect');
         if (!locSelect) return;
@@ -2959,7 +3080,7 @@
           locations = ['Klinik Utama', 'Data Center'];
         }
         locSelect.innerHTML = locations.map(l => `<option value="${l}">${l}</option>`).join('');
-      }).getAssets();
+      }
     }
 
     function openModalEditTask(taskId) {
@@ -2987,11 +3108,10 @@
         if (photoPreview && photoContainer) {
           if (target.PhotoUrl) {
             photoPreview.src = target.PhotoUrl;
-            photoPreview.classList.remove('hidden');
+            document.getElementById('taskPhotoInfoText').innerText = 'File Terlampir (Tersimpan di Drive)';
             photoContainer.classList.remove('hidden');
           } else {
             photoPreview.src = '';
-            photoPreview.classList.add('hidden');
             photoContainer.classList.add('hidden');
           }
         }
@@ -3006,42 +3126,66 @@
 
     async function handleSaveTask(e) {
       e.preventDefault();
-      const taskId = document.getElementById('taskIdInput').value;
-      const photoImg = document.getElementById('taskPhotoPreview');
-      let photoUrl = '';
-
-      if (photoImg && !photoImg.classList.contains('hidden') && photoImg.src.startsWith('data:image')) {
-        photoUrl = await new Promise((resolve) => {
-          google.script.run
-            .withSuccessHandler(res => resolve((res && res.success) ? res.url : ''))
-            .withFailureHandler(() => resolve(''))
-            .uploadMediaToDrive(photoImg.src, 'TaskPhoto_' + (taskId || 'New') + '_' + Date.now() + '.png');
-        });
-      } else if (photoImg && !photoImg.classList.contains('hidden')) {
-        photoUrl = photoImg.src;
+      const btn = document.getElementById('btnSaveTaskSubmit');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan Cepat...';
       }
 
-      const payload = {
-        taskId: taskId,
-        title: document.getElementById('taskTitleInput').value,
-        jobType: document.getElementById('taskJobTypeSelect').value,
-        klinik: document.getElementById('taskKlinikSelect').value,
-        lokasi: '',
-        assetId: '',
-        technician: document.getElementById('taskTechSelect').value,
-        dueDate: document.getElementById('taskDueDateInput').value,
-        status: document.getElementById('taskStatusSelect').value,
-        photoUrl: photoUrl,
-        attachmentUrl: document.getElementById('taskAttachmentInput').value,
-        description: document.getElementById('taskDescInput').value
-      };
+      try {
+        const taskId = document.getElementById('taskIdInput').value;
+        const photoImg = document.getElementById('taskPhotoPreview');
+        let photoUrl = '';
 
-      google.script.run.withSuccessHandler(function(res) {
-        showToast(res.message || 'Work Order Berhasil Disimpan!');
-        closeModalTask();
-        loadTasksTable();
-        renderCalendar();
-      }).saveTask(payload);
+        if (photoImg && photoImg.src && photoImg.src.startsWith('data:image')) {
+          photoUrl = await new Promise((resolve) => {
+            google.script.run
+              .withSuccessHandler(res => resolve((res && res.success) ? res.url : ''))
+              .withFailureHandler(() => resolve(''))
+              .uploadMediaToDrive(photoImg.src, 'TaskPhoto_' + (taskId || 'New') + '_' + Date.now() + '.jpg');
+          });
+        } else if (photoImg && photoImg.src) {
+          photoUrl = photoImg.src;
+        }
+
+        const payload = {
+          taskId: taskId,
+          title: document.getElementById('taskTitleInput').value,
+          jobType: document.getElementById('taskJobTypeSelect').value,
+          klinik: document.getElementById('taskKlinikSelect').value,
+          lokasi: '',
+          assetId: '',
+          technician: document.getElementById('taskTechSelect').value,
+          dueDate: document.getElementById('taskDueDateInput').value,
+          status: document.getElementById('taskStatusSelect').value,
+          photoUrl: photoUrl,
+          attachmentUrl: document.getElementById('taskAttachmentInput').value,
+          description: document.getElementById('taskDescInput').value
+        };
+
+        google.script.run.withSuccessHandler(function(res) {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = 'Simpan Data Work Order';
+          }
+          showToast(res.message || 'Work Order Berhasil Disimpan!');
+          closeModalTask();
+          loadTasksTable();
+          renderCalendar();
+        }).withFailureHandler(function() {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = 'Simpan Data Work Order';
+          }
+          showToast('Gagal menyimpan task', true);
+        }).saveTask(payload);
+      } catch (err) {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = 'Simpan Data Work Order';
+        }
+        showToast('Terjadi kesalahan', true);
+      }
     }
 
     function deleteTaskItem(taskId) {
@@ -3060,8 +3204,16 @@
     }
 
     function loadMasterChecklists() {
+      if (inMemoryCache.checklists) {
+        renderChecklistsTable(inMemoryCache.checklists);
+      }
       google.script.run.withSuccessHandler(function(data) {
         const lists = Array.isArray(data) ? data : [];
+        inMemoryCache.checklists = lists;
+        renderChecklistsTable(lists);
+      }).getChecklists();
+
+      function renderChecklistsTable(lists) {
         const tbody = document.getElementById('checklistTableBody');
         if (!tbody) return;
 
@@ -3086,7 +3238,7 @@
             </td>
           </tr>
         `).join('');
-      }).getChecklists();
+      }
     }
 
     function loadExecutionChecklist(category) {
@@ -3125,8 +3277,16 @@
     }
 
     function loadAssetsTable() {
+      if (inMemoryCache.assets) {
+        renderAssetsTable(inMemoryCache.assets);
+      }
       google.script.run.withSuccessHandler(function(assets) {
         const data = Array.isArray(assets) ? assets : [];
+        inMemoryCache.assets = data;
+        renderAssetsTable(data);
+      }).getAssets();
+
+      function renderAssetsTable(data) {
         const tbody = document.getElementById('assetTableBody');
         if (!tbody) return;
 
@@ -3158,7 +3318,7 @@
             </td>
           </tr>
         `).join('');
-      }).getAssets();
+      }
     }
 
     function openModalAddAsset() {
@@ -3239,11 +3399,12 @@
         setRating(log.Checklist_Avg_Rating || 5);
 
         if (log.Attachment) {
-          const photoPreview = document.getElementById('photoPreview');
           const photoContainer = document.getElementById('photoPreviewContainer');
-          if (photoPreview && photoContainer) {
-            photoPreview.src = log.Attachment;
-            photoPreview.classList.remove('hidden');
+          const previewImg = document.getElementById('photoPreview');
+          if (photoContainer && previewImg) {
+            previewImg.src = log.Attachment;
+            document.getElementById('photoPreviewFileName').innerText = 'File Tersimpan di Google Drive';
+            document.getElementById('photoCompressionStatus').innerText = 'Klik Buka File Asli untuk melihat';
             photoContainer.classList.remove('hidden');
           }
         }
@@ -3282,7 +3443,7 @@
         renderCalendar();
       }
       if (tabId === 'tasks') {
-        loadTasksTable();
+        renderTasksList(activeTaskFilter);
       }
     }
 
@@ -3447,7 +3608,15 @@
     }
 
     function populateTechnicianDropdown() {
+      if (inMemoryCache.techs) {
+        fillTechSelect(inMemoryCache.techs);
+      }
       google.script.run.withSuccessHandler(function(techs) {
+        inMemoryCache.techs = techs;
+        fillTechSelect(techs);
+      }).getTechnicians();
+
+      function fillTechSelect(techs) {
         const techSelect = document.getElementById('schedTechSelect');
         if (!techSelect) return;
         const list = Array.isArray(techs) ? techs : [];
@@ -3456,11 +3625,19 @@
           return;
         }
         techSelect.innerHTML = list.map(t => `<option value="${t.Name}">${t.Name} (${t.Email})</option>`).join('');
-      }).getTechnicians();
+      }
     }
 
     function populateScheduleLocationDropdown() {
+      if (inMemoryCache.assets) {
+        fillLocationSelect(inMemoryCache.assets);
+      }
       google.script.run.withSuccessHandler(function(assets) {
+        inMemoryCache.assets = assets;
+        fillLocationSelect(assets);
+      }).getAssets();
+
+      function fillLocationSelect(assets) {
         const assetList = Array.isArray(assets) ? assets : [];
         const locationSelect = document.getElementById('schedKlinikSelect');
         if (!locationSelect) return;
@@ -3472,7 +3649,7 @@
 
         locationSelect.innerHTML = locations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
         onScheduleLocationChange(assetList);
-      }).getAssets();
+      }
     }
 
     function onScheduleLocationChange(assets = null) {
@@ -3493,8 +3670,11 @@
 
       if (assets) {
         filterAndPopulate(assets);
+      } else if (inMemoryCache.assets) {
+        filterAndPopulate(inMemoryCache.assets);
       } else {
         google.script.run.withSuccessHandler(function(fetchedAssets) {
+          inMemoryCache.assets = fetchedAssets;
           filterAndPopulate(Array.isArray(fetchedAssets) ? fetchedAssets : []);
         }).getAssets();
       }
@@ -3559,7 +3739,7 @@
       }).deleteChecklistItem(id);
     }
 
-    // SUBMIT MAINTENANCE EXECUTION LOG
+    // SUBMIT MAINTENANCE EXECUTION LOG (DENGAN FAST UPLOAD & AUTO COMPRESSION)
     async function submitExecutionLog(e) {
       if (e) e.preventDefault();
 
@@ -3579,20 +3759,20 @@
         const photoImg = document.getElementById('photoPreview');
         const technician = (currentUser && currentUser.name) ? currentUser.name : 'Teknisi';
 
-        // Upload Foto ke Google Drive
+        // Upload Foto Cepat ke Google Drive
         let attachmentUrl = '';
-        if (photoImg && !photoImg.classList.contains('hidden') && photoImg.src.startsWith('data:image')) {
+        if (photoImg && photoImg.src && photoImg.src.startsWith('data:image')) {
           attachmentUrl = await new Promise((resolve) => {
             google.script.run
               .withSuccessHandler(res => resolve((res && res.success) ? res.url : ''))
               .withFailureHandler(() => resolve(''))
-              .uploadMediaToDrive(photoImg.src, 'Photo_' + taskId + '_' + Date.now() + '.png');
+              .uploadMediaToDrive(photoImg.src, 'Photo_' + taskId + '_' + Date.now() + '.jpg');
           });
-        } else if (photoImg && !photoImg.classList.contains('hidden')) {
+        } else if (photoImg && photoImg.src) {
           attachmentUrl = photoImg.src;
         }
 
-        // Upload Tanda Tangan Canvas ke Google Drive
+        // Upload Tanda Tangan Canvas Cepat ke Google Drive
         let signatureUrl = '';
         if (signatureCanvas) {
           const sigDataUrl = signatureCanvas.toDataURL('image/png');
@@ -3679,15 +3859,17 @@
         }
       }
 
-      // Tampilkan Foto Bukti jika ada
+      // Tampilkan Link File Bukti jika ada
       const photoPreview = document.getElementById('photoPreview');
       const pdfPhotoSection = document.getElementById('pdfPhotoSection');
-      const pdfPhotoImg = document.getElementById('pdfPhotoImg');
-      if (photoPreview && photoPreview.src && !photoPreview.classList.contains('hidden') && pdfPhotoSection && pdfPhotoImg) {
-        pdfPhotoImg.src = photoPreview.src;
-        pdfPhotoSection.classList.remove('hidden');
-      } else if (log.Attachment && pdfPhotoSection && pdfPhotoImg) {
-        pdfPhotoImg.src = log.Attachment;
+      const pdfPhotoLinkText = document.getElementById('pdfPhotoLinkText');
+      const pdfPhotoDirectLink = document.getElementById('pdfPhotoDirectLink');
+
+      const activePhotoUrl = (photoPreview && photoPreview.src) ? photoPreview.src : log.Attachment;
+
+      if (activePhotoUrl && pdfPhotoSection && pdfPhotoDirectLink) {
+        pdfPhotoDirectLink.href = activePhotoUrl;
+        if (pdfPhotoLinkText) pdfPhotoLinkText.innerText = 'Dokumen/Foto Terlampir: ' + (activePhotoUrl.substring(0, 40) + '...');
         pdfPhotoSection.classList.remove('hidden');
       } else if (pdfPhotoSection) {
         pdfPhotoSection.classList.add('hidden');
@@ -3805,6 +3987,9 @@
 
       const filterMonth = document.getElementById('filterMonth');
       if (filterMonth) filterMonth.value = String(new Date().getMonth() + 1);
+
+      const kanbanMonthSelect = document.getElementById('kanbanMonthSelect');
+      if (kanbanMonthSelect) kanbanMonthSelect.value = String(new Date().getMonth() + 1);
 
       window.addEventListener('resize', function() {
         if (signatureCanvas && document.getElementById('view-execution') && !document.getElementById('view-execution').classList.contains('hidden')) {
