@@ -17,6 +17,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         screens: {
           'xs': '380px',
@@ -58,13 +59,6 @@
       ctx.roundRect(0, 0, 512, 512, 96);
       ctx.fill();
 
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.roundRect(100, 140, 312, 280, 36);
-      ctx.fill();
-
-      ctx.fillStyle = '#10b981';
-      ctx.beginPath();
       ctx.roundRect(100, 140, 312, 80, [36, 36, 0, 0]);
       ctx.fill();
 
@@ -183,13 +177,80 @@
     .kanban-col {
       min-height: 380px;
     }
-    .kanban-col.drag-over {
-      background-color: #e6f4ea !important;
-      border-color: #006837 !important;
+    /* =========================================================================
+       DARK THEME STYLES (ELEGANT SLATE THEME)
+       ========================================================================= */
+    html.dark, body.dark {
+      background-color: #0b1329 !important;
+      color: #f1f5f9 !important;
     }
-    .kanban-card.dragging {
-      opacity: 0.5;
-      transform: scale(0.98);
+    .dark body {
+      background-color: #0b1329 !important;
+      color: #f1f5f9 !important;
+    }
+    .dark aside#mainSidebar, .dark header {
+      background-color: #111c38 !important;
+      border-color: #1e293b !important;
+    }
+    .dark .bg-white {
+      background-color: #111c38 !important;
+      border-color: #1e293b !important;
+      color: #f1f5f9 !important;
+    }
+    .dark .bg-slate-50 {
+      background-color: #0b1329 !important;
+      border-color: #1e293b !important;
+    }
+    .dark .bg-slate-100 {
+      background-color: #1e293b !important;
+      color: #cbd5e1 !important;
+    }
+    .dark .text-slate-800 {
+      color: #f8fafc !important;
+    }
+    .dark .text-slate-700 {
+      color: #e2e8f0 !important;
+    }
+    .dark .text-slate-600 {
+      color: #cbd5e1 !important;
+    }
+    .dark .text-slate-500, .dark .text-slate-400 {
+      color: #94a3b8 !important;
+    }
+    .dark .border-slate-100, .dark .border-slate-200, .dark .border-slate-200\/80 {
+      border-color: #1e293b !important;
+    }
+    .dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+      border-color: #1e293b !important;
+    }
+    .dark tr:hover {
+      background-color: #162447 !important;
+    }
+    .dark input, .dark select, .dark textarea {
+      background-color: #0b1329 !important;
+      color: #f8fafc !important;
+      border-color: #334155 !important;
+    }
+    .dark input:focus, .dark select:focus, .dark textarea:focus {
+      border-color: #10b981 !important;
+    }
+    .dark .custom-shadow {
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5) !important;
+    }
+    .dark .nav-item:not(.bg-brand\/10) {
+      color: #94a3b8 !important;
+    }
+    .dark .nav-item:not(.bg-brand\/10):hover {
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+    }
+    .dark .kanban-col {
+      background-color: #0d1733 !important;
+      border-color: #1e293b !important;
+    }
+    .dark .kanban-card {
+      background-color: #111c38 !important;
+      border-color: #1e293b !important;
     }
 
     @media print {
@@ -215,8 +276,11 @@
       </div>
     </div>
     
-    <div class="flex items-center gap-2">
-      <button onclick="toggleMobileSidebar()" class="p-2 text-slate-600 hover:text-brand hover:bg-slate-100 rounded-xl transition" title="Buka Menu">
+    <div class="flex items-center gap-1.5">
+      <button onclick="toggleTheme()" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition" title="Ubah Tema (Light / Dark)">
+        <i class="fa-solid fa-moon theme-toggle-icon text-base"></i>
+      </button>
+      <button onclick="toggleMobileSidebar()" class="p-2 text-slate-600 dark:text-slate-300 hover:text-brand hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition" title="Buka Menu">
         <i id="btnMobileMenuIcon" class="fa-solid fa-bars text-lg"></i>
       </button>
     </div>
@@ -272,7 +336,7 @@
     <div class="mt-6 lg:mt-8 space-y-3">
       <!-- Tombol New Schedule: Aktif untuk Admin & Teknisi -->
       <button id="btnNewScheduleSidebar" onclick="openModalNewSchedule()" class="w-full py-2.5 lg:py-3 bg-brand hover:bg-brand-dark text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md transition" title="Buat Jadwal Baru">
-        <i class="fa-solid fa-plus"></i> <span class="sidebar-text truncate">+ New Schedule</span>
+        <i class="fa-solid fa-plus"></i> <span class="sidebar-text truncate">New Schedule</span>
       </button>
 
       <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
@@ -285,9 +349,14 @@
             <p class="text-[10px] text-slate-400 truncate" id="userRoleDisplay">-</p>
           </div>
         </div>
-        <button onclick="logout()" class="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition shrink-0" title="Keluar / Logout">
-          <i class="fa-solid fa-right-from-bracket"></i>
-        </button>
+        <div class="flex items-center gap-1 shrink-0">
+          <button onclick="toggleTheme()" class="p-1.5 text-slate-400 hover:text-amber-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Ubah Tema (Light / Dark)">
+            <i class="fa-solid fa-moon theme-toggle-icon"></i>
+          </button>
+          <button onclick="logout()" class="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition" title="Keluar / Logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
       </div>
     </div>
   </aside>
@@ -708,7 +777,7 @@
             </button>
             <!-- Tombol Tambah Work Order: Terbuka untuk Admin & Teknisi -->
             <button id="btnNewTaskMain" onclick="openModalNewTask()" class="px-3.5 py-2 bg-brand hover:bg-brand-dark text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
-              <i class="fa-solid fa-plus"></i> + Work Order
+              <i class="fa-solid fa-plus"></i> Work Order
             </button>
           </div>
         </div>
@@ -1273,10 +1342,10 @@
 
       <div class="space-y-2.5 pt-1">
         <button onclick="confirmCalendarChoice('PM')" class="w-full py-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow transition">
-          <i class="fa-solid fa-calendar-check"></i> + Jadwal Maintenance (PM)
+          <i class="fa-solid fa-calendar-check"></i> Jadwal Maintenance (PM)
         </button>
         <button onclick="confirmCalendarChoice('WO')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow transition">
-          <i class="fa-solid fa-clipboard-list"></i> + Work Order Baru (WO)
+          <i class="fa-solid fa-clipboard-list"></i> Work Order Baru (WO)
         </button>
         <button onclick="closeModalCalendarChoice()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold transition">
           Batal
@@ -1429,14 +1498,15 @@
     </div>
   </div>
 
-  <!-- MODAL: NEW CHECKLIST ITEM (ADMIN ONLY) -->
+  <!-- MODAL: NEW / EDIT CHECKLIST ITEM (ADMIN ONLY) -->
   <div id="modalChecklist" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 hidden z-50">
     <div class="bg-white rounded-2xl max-w-sm sm:max-w-md w-full p-5 sm:p-6 space-y-3.5 custom-shadow my-auto">
       <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-        <h3 class="font-bold text-slate-800 text-sm sm:text-base">Tambah Item Checklist Baru</h3>
+        <h3 class="font-bold text-slate-800 text-sm sm:text-base" id="checklistModalTitle">Tambah Item Checklist Baru</h3>
         <button onclick="closeModalNewChecklist()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <form onsubmit="handleNewChecklist(event)" class="space-y-3 text-xs">
+      <form onsubmit="handleSaveChecklist(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="chkEditId" value="">
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Kategori Aset</label>
           <select id="chkAddCategory" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:border-brand">
@@ -1451,7 +1521,13 @@
           <label class="block font-semibold text-slate-600 mb-1">Deskripsi Prosedur Pekerjaan</label>
           <textarea id="chkAddDesc" required rows="3" placeholder="Contoh: Periksa temperatur ambient dan fan cooling..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand"></textarea>
         </div>
-        <button type="submit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow mt-2">
+        <div id="chkActiveToggleContainer" class="flex items-center gap-2 pt-1">
+          <label class="flex items-center gap-2 cursor-pointer font-semibold text-slate-700">
+            <input type="checkbox" id="chkIsActiveInput" checked class="w-4 h-4 text-brand rounded border-slate-300 focus:ring-brand">
+            <span>Status Checklist Aktif</span>
+          </label>
+        </div>
+        <button type="submit" id="btnSaveChecklistSubmit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow mt-2">
           Simpan Checklist
         </button>
       </form>
@@ -1750,7 +1826,7 @@
     // =========================================================================
     // KONFIGURASI BACKEND GOOGLE APPS SCRIPT (REST API LIVE)
     // =========================================================================
-    var GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbxdvtk7EQEAelP1-5zUxRcP3x-Fy3sZQ2KMqyeWMAUV-kiTq9IADOBZcrP9e2xQq6Y/exec";
+    var GAS_BACKEND_URL = "https://script.google.com/a/macros/fdcdentalclinic.co.id/s/AKfycbyG4bQql49IVq5pRUOgXdQKoRrh4VczvBb40fyJCyXF8k3FlIr9j2_I7rFz_LgY7I31/exec";
 
     // Cache Data in Memory untuk Akses Super Cepat & Responsive
     var inMemoryCache = {
@@ -3866,15 +3942,22 @@
           <tr class="hover:bg-slate-50 border-b border-slate-100">
             <td class="p-3 font-bold text-slate-700">${c.ChecklistID}</td>
             <td class="p-3 font-semibold"><span class="px-2 py-1 bg-slate-100 rounded text-slate-600 text-[10px] font-bold">${c.Category}</span></td>
-            <td class="p-3 text-slate-600">${c.ItemDescription}</td>
+            <td class="p-3 text-slate-600 font-medium">${c.ItemDescription}</td>
             <td class="p-3">
               <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${c.IsActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}">
                 ${c.IsActive ? 'Aktif' : 'Nonaktif'}
               </span>
             </td>
-            <td class="p-3 text-right space-x-2">
-              <button onclick="toggleChecklistStatus('${c.ChecklistID}')" class="text-xs text-brand hover:underline font-semibold">Toggle</button>
-              <button onclick="deleteChecklist('${c.ChecklistID}')" class="text-xs text-red-500 hover:underline font-semibold"><i class="fa-solid fa-trash"></i> Hapus</button>
+            <td class="p-3 text-right space-x-1.5 whitespace-nowrap">
+              <button onclick="openModalEditChecklist('${c.ChecklistID}', '${c.Category}', '${encodeURIComponent(c.ItemDescription || '')}', ${c.IsActive})" class="px-2.5 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-bold transition">
+                <i class="fa-solid fa-pen-to-square"></i> Edit
+              </button>
+              <button onclick="toggleChecklistStatus('${c.ChecklistID}')" class="px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-bold transition">
+                <i class="fa-solid fa-repeat"></i> Toggle
+              </button>
+              <button onclick="deleteChecklist('${c.ChecklistID}')" class="px-2 py-1 text-red-500 hover:bg-red-50 rounded-lg text-xs font-bold transition" title="Hapus">
+                <i class="fa-solid fa-trash"></i>
+              </button>
             </td>
           </tr>
         `).join('');
@@ -4667,25 +4750,73 @@
       }).submitMaintenanceLog(payload);
     }
 
-    function openModalNewChecklist() { document.getElementById('modalChecklist').classList.remove('hidden'); }
-    function closeModalNewChecklist() { document.getElementById('modalChecklist').classList.add('hidden'); }
+    function openModalNewChecklist() {
+      document.getElementById('checklistModalTitle').innerText = 'Tambah Item Checklist Baru';
+      document.getElementById('chkEditId').value = '';
+      document.getElementById('chkAddCategory').value = 'SERVER';
+      document.getElementById('chkAddDesc').value = '';
+      const isAct = document.getElementById('chkIsActiveInput');
+      if (isAct) isAct.checked = true;
+      document.getElementById('modalChecklist').classList.remove('hidden');
+    }
 
-    function handleNewChecklist(e) {
+    function openModalEditChecklist(id, category, descEncoded, isActive) {
+      document.getElementById('checklistModalTitle').innerText = 'Edit Master Checklist: ' + id;
+      document.getElementById('chkEditId').value = id;
+      document.getElementById('chkAddCategory').value = category || 'SERVER';
+      document.getElementById('chkAddDesc').value = decodeURIComponent(descEncoded || '');
+      const isAct = document.getElementById('chkIsActiveInput');
+      if (isAct) isAct.checked = (isActive === true || isActive === 'true' || isActive === 1);
+      document.getElementById('modalChecklist').classList.remove('hidden');
+    }
+
+    function closeModalNewChecklist() {
+      document.getElementById('modalChecklist').classList.add('hidden');
+    }
+
+    function handleSaveChecklist(e) {
       e.preventDefault();
+      const btn = document.getElementById('btnSaveChecklistSubmit');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+      }
+
+      const id = document.getElementById('chkEditId').value;
       const category = document.getElementById('chkAddCategory').value;
       const description = document.getElementById('chkAddDesc').value;
+      const isActive = document.getElementById('chkIsActiveInput') ? document.getElementById('chkIsActiveInput').checked : true;
+
+      const payload = {
+        id: id,
+        category: category,
+        description: description,
+        isActive: isActive
+      };
 
       google.script.run.withSuccessHandler(function(res) {
-        showToast(res.message || 'Checklist berhasil ditambahkan');
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = 'Simpan Checklist';
+        }
+        showToast(res.message || 'Checklist berhasil disimpan!');
         closeModalNewChecklist();
+        delete inMemoryCache.checklists;
         loadMasterChecklists();
         loadExecutionChecklist(category);
-      }).addChecklistItem({ category: category, description: description });
+      }).withFailureHandler(function(err) {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = 'Simpan Checklist';
+        }
+        showToast('Gagal menyimpan checklist: ' + err, true);
+      }).saveChecklistItem(payload);
     }
 
     function toggleChecklistStatus(id) {
       google.script.run.withSuccessHandler(function(res) {
         showToast(res.message || 'Status checklist diperbarui');
+        delete inMemoryCache.checklists;
         loadMasterChecklists();
       }).toggleChecklistStatus(id);
     }
@@ -4694,8 +4825,54 @@
       if (!confirm('Yakin ingin menghapus item checklist ini?')) return;
       google.script.run.withSuccessHandler(function(res) {
         showToast(res.message || 'Checklist berhasil dihapus');
+        delete inMemoryCache.checklists;
         loadMasterChecklists();
       }).deleteChecklistItem(id);
+    }
+
+    // =========================================================================
+    // THEME CONTROLLER (LIGHT / DARK MODE) FOR ADMIN & TECHNICIAN
+    // =========================================================================
+    function initTheme() {
+      try {
+        const savedTheme = localStorage.getItem('jadwalin_theme') || 'light';
+        applyTheme(savedTheme, false);
+      } catch (e) {}
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+      const newTheme = isDark ? 'light' : 'dark';
+      applyTheme(newTheme, true);
+    }
+
+    function applyTheme(theme, notify = true) {
+      const isDark = (theme === 'dark');
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        document.body.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.body.classList.remove('dark');
+      }
+
+      try {
+        localStorage.setItem('jadwalin_theme', theme);
+      } catch (e) {}
+
+      // Update theme toggle icons across the app
+      const icons = document.querySelectorAll('.theme-toggle-icon');
+      icons.forEach(ic => {
+        if (isDark) {
+          ic.className = 'fa-solid fa-sun text-amber-400 theme-toggle-icon';
+        } else {
+          ic.className = 'fa-solid fa-moon text-slate-500 theme-toggle-icon';
+        }
+      });
+
+      if (notify) {
+        showToast(isDark ? '🌙 Mode Gelap (Dark Mode) Aktif' : '☀️ Mode Terang (Light Mode) Aktif');
+      }
     }
 
     // SUBMIT MAINTENANCE EXECUTION LOG (DENGAN FAST UPLOAD & AUTO COMPRESSION)
@@ -4920,6 +5097,8 @@
 
     // INITIALIZATION ON PAGE LOAD
     document.addEventListener('DOMContentLoaded', function() {
+      initTheme();
+
       try {
         const savedSession = localStorage.getItem('jadwalin_session');
         if (savedSession) {
