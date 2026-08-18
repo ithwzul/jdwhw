@@ -561,30 +561,51 @@
           </div>
         </div>
 
-        <div id="bulkActionBar" class="hidden bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs transition">
-          <div class="flex items-center gap-3">
-            <span class="font-bold text-emerald-900 bg-emerald-200/60 px-2.5 py-1 rounded-lg" id="selectedTaskCount">0 Jadwal Dipilih</span>
-            <button onclick="selectAllCalendarTasks(true)" class="text-emerald-700 hover:underline font-semibold">Pilih Semua</button>
-            <span class="text-emerald-300">|</span>
-            <button onclick="selectAllCalendarTasks(false)" class="text-emerald-700 hover:underline font-semibold">Batal Pilih</button>
+        <div id="bulkActionBar" class="hidden bg-emerald-50/90 border border-emerald-300 p-4 rounded-3xl space-y-3 text-xs transition shadow-sm">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 pb-2.5 border-b border-emerald-200/80">
+            <div class="flex items-center gap-3">
+              <span class="font-black text-emerald-950 bg-emerald-200/80 px-3 py-1 rounded-xl text-xs flex items-center gap-1.5" id="selectedTaskCount">
+                <i class="fa-solid fa-list-check text-brand"></i> 0 Jadwal Dipilih
+              </span>
+              <button onclick="selectAllCalendarTasks(true)" class="text-brand hover:underline font-bold text-xs">Pilih Semua (Bulan Ini)</button>
+              <span class="text-emerald-300">|</span>
+              <button onclick="selectAllCalendarTasks(false)" class="text-slate-500 hover:underline font-semibold text-xs">Batal Pilih</button>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="openBulkPdfModal()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-sm transition flex items-center gap-1.5" title="Jadikan Dokumen PDF Rekapitulasi">
+                <i class="fa-solid fa-file-pdf"></i> Jadikan PDF
+              </button>
+              <button onclick="openBulkEmailModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition flex items-center gap-1.5" title="Kirim Rekapitulasi Laporan ke Email">
+                <i class="fa-solid fa-envelope"></i> Kirim ke Email
+              </button>
+              <button onclick="exportBulkDataToCsv()" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-sm transition flex items-center gap-1.5" title="Export Rekap Bulanan ke CSV/Excel">
+                <i class="fa-solid fa-file-excel"></i> Export CSV / Excel
+              </button>
+            </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            <select id="bulkTargetStatus" class="p-2 bg-white border border-emerald-300 rounded-xl font-bold text-slate-700 focus:outline-none focus:border-brand">
-              <option value="Optimal">Set Status: Optimal / Selesai</option>
-              <option value="Needs Attention">Set Status: Needs Attention</option>
-              <option value="Tertunda / Delay">Set Status: Tertunda / Delay</option>
-            </select>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-[11px] text-emerald-900 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-sliders text-brand"></i> Perbarui Status Massal:
+            </span>
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              <select id="bulkTargetStatus" class="p-2 bg-white border border-emerald-300 rounded-xl font-bold text-slate-700 focus:outline-none focus:border-brand text-xs">
+                <option value="Optimal">Set Status: Optimal / Selesai</option>
+                <option value="Needs Attention">Set Status: Needs Attention</option>
+                <option value="Tertunda / Delay">Set Status: Tertunda / Delay</option>
+              </select>
 
-            <select id="bulkTargetRating" class="p-2 bg-white border border-emerald-300 rounded-xl font-bold text-slate-700 focus:outline-none focus:border-brand">
-              <option value="5">★ 5.0 Rating</option>
-              <option value="4" selected>★ 4.0 Rating</option>
-              <option value="3">★ 3.0 Rating</option>
-            </select>
+              <select id="bulkTargetRating" class="p-2 bg-white border border-emerald-300 rounded-xl font-bold text-slate-700 focus:outline-none focus:border-brand text-xs">
+                <option value="5">★ 5.0 Rating</option>
+                <option value="4" selected>★ 4.0 Rating</option>
+                <option value="3">★ 3.0 Rating</option>
+              </select>
 
-            <button onclick="executeBulkUpdate()" class="px-4 py-2 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
-              <i class="fa-solid fa-check-double"></i> Terapkan Massal
-            </button>
+              <button onclick="executeBulkUpdate()" class="px-4 py-2 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+                <i class="fa-solid fa-check-double"></i> Terapkan Massal
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1414,6 +1435,125 @@
     </div>
   </div>
 
+  <!-- MODAL: BULK / MONTHLY PDF REPORT PREVIEW -->
+  <div id="modalBulkPdfReport" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 hidden z-50 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-4xl w-full p-5 sm:p-6 space-y-5 custom-shadow my-auto max-h-[92vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3.5 no-print">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-file-pdf text-red-500 text-xl sm:text-2xl"></i>
+          <div>
+            <h3 class="font-bold text-slate-800 text-sm sm:text-base">Rekapitulasi Laporan Maintenance & Work Order (PDF)</h3>
+            <p class="text-[11px] text-slate-400">Siap dicetak atau disimpan sebagai dokumen PDF resmi</p>
+          </div>
+        </div>
+        <button onclick="closeBulkPdfModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="border border-slate-200 rounded-xl p-4 sm:p-6 bg-white space-y-4 text-slate-800 text-xs" id="bulkPdfContentPrintArea">
+        <div class="flex justify-between items-start border-b-2 border-slate-800 pb-4">
+          <div>
+            <h2 class="font-black text-slate-900 text-base sm:text-lg">JADWALIN HW - REKAPITULASI LAPORAN BULANAN</h2>
+            <p class="text-xs text-slate-500 font-medium">Preventive Maintenance & Work Order Execution Summary</p>
+            <p class="text-[11px] text-brand font-bold mt-1" id="bulkPdfPeriodDisplay">Periode: -</p>
+          </div>
+          <span class="px-3 py-1 bg-brand text-white font-black text-xs rounded-md">OFFICIAL REKAP</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+          <div>
+            <p class="text-[10px] text-slate-400 uppercase font-bold">Total Agenda</p>
+            <p class="text-base font-black text-slate-800" id="bulkPdfTotalCount">0</p>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 uppercase font-bold">Optimal / Selesai</p>
+            <p class="text-base font-black text-emerald-600" id="bulkPdfOptimalCount">0</p>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 uppercase font-bold">Pending / Delay</p>
+            <p class="text-base font-black text-amber-600" id="bulkPdfPendingCount">0</p>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 uppercase font-bold">Rata-Rata Rating</p>
+            <p class="text-base font-black text-amber-500" id="bulkPdfAvgRating">★ 5.0</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border border-slate-200">
+            <thead class="bg-slate-800 text-white font-bold text-[11px] uppercase">
+              <tr>
+                <th class="p-2 border border-slate-700">No</th>
+                <th class="p-2 border border-slate-700">Task ID</th>
+                <th class="p-2 border border-slate-700">Tanggal</th>
+                <th class="p-2 border border-slate-700">Tipe</th>
+                <th class="p-2 border border-slate-700">Lokasi / Klinik</th>
+                <th class="p-2 border border-slate-700">Aset / Judul Pekerjaan</th>
+                <th class="p-2 border border-slate-700">Teknisi</th>
+                <th class="p-2 border border-slate-700 text-center">Status</th>
+                <th class="p-2 border border-slate-700 text-center">Rating</th>
+              </tr>
+            </thead>
+            <tbody id="bulkPdfTableBody" class="divide-y divide-slate-200">
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-center">
+          <div>
+            <p class="text-[11px] text-slate-500 font-semibold mb-12">Disiapkan Oleh Teknisi:</p>
+            <p class="font-bold text-slate-800 border-t border-slate-300 pt-1" id="bulkPdfSignTech">Teknisi Lapangan</p>
+          </div>
+          <div>
+            <p class="text-[11px] text-slate-500 font-semibold mb-12">Mengetahui / Supervisor:</p>
+            <p class="font-bold text-slate-800 border-t border-slate-300 pt-1">Kepala Bagian IT / Klinik</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2.5 pt-1 no-print">
+        <button onclick="closeBulkPdfModal()" class="px-4 py-2 border border-slate-300 rounded-xl font-semibold text-xs text-slate-600 hover:bg-slate-50">Tutup</button>
+        <button onclick="triggerPrintPDF()" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs flex items-center gap-2 shadow">
+          <i class="fa-solid fa-print"></i> Cetak / Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: BULK EMAIL REPORT -->
+  <div id="modalBulkEmailReport" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 hidden z-50">
+    <div class="bg-white rounded-2xl max-w-sm sm:max-w-md w-full p-5 sm:p-6 space-y-3.5 custom-shadow my-auto">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="font-bold text-slate-800 text-sm sm:text-base">Kirim Rekapitulasi via Email</h3>
+          <p class="text-[11px] text-slate-400" id="bulkEmailCountDisplay">0 agenda akan dikirimkan</p>
+        </div>
+        <button onclick="closeBulkEmailModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">Email Penerima (Kepala Bagian / Pimpinan)</label>
+          <input type="email" id="bulkEmailRecipient" required placeholder="pimpinan@klinik.com" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">CC Email (Optional)</label>
+          <input type="email" id="bulkEmailCc" placeholder="supervisor@klinik.com" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">Subjek Email</label>
+          <input type="text" id="bulkEmailSubject" value="Rekapitulasi Laporan Maintenance & Work Order - Jadwalin HW" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand font-medium">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">Catatan Tambahan (Optional)</label>
+          <textarea id="bulkEmailNotes" rows="2" placeholder="Catatan rekapitulasi performa..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand"></textarea>
+        </div>
+        <button onclick="confirmSendBulkEmail()" id="btnConfirmBulkEmail" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow mt-2 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i> Kirim Rekapitulasi Sekarang
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // =========================================================================
     // KONFIGURASI BACKEND GOOGLE APPS SCRIPT (REST API LIVE)
@@ -1489,6 +1629,7 @@
         uploadMediaToDrive: function(base64Data, filename) { executeApi('uploadMediaToDrive', { base64Data: base64Data, filename: filename }); },
         submitMaintenanceLog: function(payload) { executeApi('submitMaintenanceLog', payload); },
         sendEmailReport: function(email, taskId, payload, ccEmail) { executeApi('sendEmailReport', { email: email, taskId: taskId, payload: payload, ccEmail: ccEmail }); },
+        sendBulkEmailReport: function(email, payload, ccEmail) { executeApi('sendBulkEmailReport', { email: email, payload: payload, ccEmail: ccEmail }); },
         bulkUpdateLogs: function(taskIds, newStatus, rating, reasonDelay, ticketNumber) { executeApi('bulkUpdateLogs', { taskIds: taskIds, newStatus: newStatus, rating: rating, reasonDelay: reasonDelay, ticketNumber: ticketNumber }); }
       };
       return runner;
@@ -2580,12 +2721,16 @@
             const isWo = (e.itemType === 'WO');
             const borderAccent = isWo ? 'border-l-4 border-l-blue-600' : (e.status === 'Optimal' ? 'border-l-4 border-l-emerald-500' : 'border-l-4 border-l-amber-500');
             const typeBadgeCls = isWo ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800';
+            const isSelected = selectedBulkTaskIds.includes(e.taskId);
 
             return `
-              <div onclick="${isWo ? `openModalEditTask('${e.taskId}')` : `openExecutionLog('${e.taskId}')`}" 
-                   class="bg-white p-4 rounded-2xl border border-slate-200/80 custom-shadow ${borderAccent} space-y-2 hover:border-brand/60 cursor-pointer transition shadow-sm hover:shadow-md">
+              <div onclick="${isBulkMode ? `toggleBulkTaskSelection('${e.taskId}')` : (isWo ? `openModalEditTask('${e.taskId}')` : `openExecutionLog('${e.taskId}')`)}" 
+                   class="bg-white p-4 rounded-2xl border ${isSelected ? 'border-brand bg-emerald-50/40 ring-2 ring-brand/30' : 'border-slate-200/80'} custom-shadow ${borderAccent} space-y-2 hover:border-brand/60 cursor-pointer transition shadow-sm hover:shadow-md">
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2">
+                    ${isBulkMode ? `
+                      <input type="checkbox" onchange="event.stopPropagation(); toggleBulkTaskSelection('${e.taskId}')" ${isSelected ? 'checked' : ''} class="w-4 h-4 text-brand rounded border-slate-300 focus:ring-brand shrink-0 cursor-pointer">
+                    ` : ''}
                     <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold uppercase ${typeBadgeCls}">
                       ${isWo ? `<i class="fa-solid fa-clipboard-list mr-1"></i> WO ${e.jobType || 'Daily'}` : '<i class="fa-solid fa-calendar-check mr-1"></i> PM Maintenance'}
                     </span>
@@ -2694,16 +2839,310 @@
       renderCalendar();
     }
 
+    function toggleBulkTaskSelection(taskId) {
+      const idx = selectedBulkTaskIds.indexOf(taskId);
+      if (idx > -1) {
+        selectedBulkTaskIds.splice(idx, 1);
+      } else {
+        selectedBulkTaskIds.push(taskId);
+      }
+      const countEl = document.getElementById('selectedTaskCount');
+      if (countEl) countEl.innerHTML = `<i class="fa-solid fa-list-check text-brand"></i> ${selectedBulkTaskIds.length} Jadwal Dipilih`;
+      renderCalendar();
+    }
+
     function selectAllCalendarTasks(select) {
       if (select) {
+        const mStr = String(currentCalMonth + 1).padStart(2, '0');
         const logs = Array.isArray(currentLogsData) ? currentLogsData : [];
-        selectedBulkTaskIds = logs.map(l => l.TaskID);
+        const tasks = Array.isArray(currentTasksData) ? currentTasksData : [];
+        
+        // Pilih seluruh item di bulan yang sedang aktif
+        const monthLogs = logs.filter(l => formatDateStr(l.Date).startsWith(`${currentCalYear}-${mStr}`)).map(l => l.TaskID);
+        const monthTasks = tasks.filter(t => formatDateStr(t.DueDate).startsWith(`${currentCalYear}-${mStr}`)).map(t => t.TaskID);
+        
+        selectedBulkTaskIds = Array.from(new Set([...monthLogs, ...monthTasks]));
+        if (selectedBulkTaskIds.length === 0) {
+          // Fallback pilih semua jika data bulan kosong
+          selectedBulkTaskIds = Array.from(new Set([...logs.map(l => l.TaskID), ...tasks.map(t => t.TaskID)]));
+        }
       } else {
         selectedBulkTaskIds = [];
       }
       const countEl = document.getElementById('selectedTaskCount');
-      if (countEl) countEl.innerText = `${selectedBulkTaskIds.length} Jadwal Dipilih`;
+      if (countEl) countEl.innerHTML = `<i class="fa-solid fa-list-check text-brand"></i> ${selectedBulkTaskIds.length} Jadwal Dipilih`;
       renderCalendar();
+    }
+
+    function getSelectedOrMonthlyItems() {
+      const logs = Array.isArray(currentLogsData) ? currentLogsData : [];
+      const tasks = Array.isArray(currentTasksData) ? currentTasksData : [];
+      const mStr = String(currentCalMonth + 1).padStart(2, '0');
+      
+      let allCombined = [];
+
+      logs.forEach(l => {
+        allCombined.push({
+          taskId: l.TaskID,
+          date: formatDateStr(l.Date),
+          itemType: 'PM',
+          klinik: l.TargetAsset ? l.TargetAsset.split(' ')[0] : 'Klinik',
+          lokasi: l.TargetAsset || '-',
+          title: 'Preventive Maintenance - ' + (l.TargetAsset || 'Hardware'),
+          technician: l.Technician || 'Teknisi',
+          status: l.Status || 'Optimal',
+          rating: l.Rating || '5.0',
+          attachment: l.Attachment || ''
+        });
+      });
+
+      tasks.forEach(t => {
+        allCombined.push({
+          taskId: t.TaskID,
+          date: formatDateStr(t.DueDate),
+          itemType: 'WO',
+          klinik: t.Klinik || 'Klinik',
+          lokasi: t.Lokasi || '-',
+          title: t.Title || 'Work Order Task',
+          technician: t.Technician || 'Teknisi',
+          status: t.Status || 'Belum Selesai',
+          rating: '4.5',
+          attachment: t.Attachment || t.PhotoUrl || ''
+        });
+      });
+
+      if (selectedBulkTaskIds.length > 0) {
+        return allCombined.filter(item => selectedBulkTaskIds.includes(item.taskId));
+      } else {
+        // Jika tidak ada yang dicentang secara spesifik, ambil seluruh data bulan ini
+        const monthItems = allCombined.filter(item => item.date && item.date.startsWith(`${currentCalYear}-${mStr}`));
+        return monthItems.length > 0 ? monthItems : allCombined;
+      }
+    }
+
+    // =========================================================================
+    // FITUR REKAPITULASI BULANAN: PDF PREVIEW & CETAK
+    // =========================================================================
+    function openBulkPdfModal() {
+      const items = getSelectedOrMonthlyItems();
+      if (items.length === 0) {
+        showToast('Tidak ada data agenda untuk dibuatkan PDF!', true);
+        return;
+      }
+
+      const mNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      const periodStr = selectedBulkTaskIds.length > 0
+        ? `${selectedBulkTaskIds.length} Agenda Terpilih (${mNames[currentCalMonth]} ${currentCalYear})`
+        : `Bulan ${mNames[currentCalMonth]} ${currentCalYear}`;
+
+      document.getElementById('bulkPdfPeriodDisplay').innerText = `Periode: ${periodStr}`;
+      document.getElementById('bulkPdfTotalCount').innerText = items.length;
+
+      const optimalCount = items.filter(i => i.status === 'Optimal' || i.status === 'Selesai / Closed' || i.status === 'Selesai').length;
+      const pendingCount = items.length - optimalCount;
+      document.getElementById('bulkPdfOptimalCount').innerText = optimalCount;
+      document.getElementById('bulkPdfPendingCount').innerText = pendingCount;
+
+      let sumRating = 0;
+      items.forEach(i => { sumRating += parseFloat(i.rating || 5); });
+      const avgRating = (sumRating / (items.length || 1)).toFixed(1);
+      document.getElementById('bulkPdfAvgRating').innerText = `★ ${avgRating} / 5.0`;
+
+      const tbody = document.getElementById('bulkPdfTableBody');
+      if (tbody) {
+        tbody.innerHTML = items.map((item, idx) => `
+          <tr class="hover:bg-slate-50 text-[11px]">
+            <td class="p-2 border border-slate-200 font-bold text-center">${idx + 1}</td>
+            <td class="p-2 border border-slate-200 font-mono font-bold text-slate-900">${item.taskId}</td>
+            <td class="p-2 border border-slate-200">${item.date}</td>
+            <td class="p-2 border border-slate-200 font-bold ${item.itemType === 'WO' ? 'text-blue-600' : 'text-emerald-700'}">${item.itemType}</td>
+            <td class="p-2 border border-slate-200 font-semibold">${item.klinik}</td>
+            <td class="p-2 border border-slate-200">${item.title}</td>
+            <td class="p-2 border border-slate-200">${item.technician}</td>
+            <td class="p-2 border border-slate-200 text-center font-bold ${item.status === 'Optimal' || item.status === 'Selesai / Closed' ? 'text-emerald-600' : 'text-amber-600'}">${item.status}</td>
+            <td class="p-2 border border-slate-200 text-center font-bold text-amber-500">★ ${item.rating}</td>
+          </tr>
+        `).join('');
+      }
+
+      const techName = currentUser ? currentUser.name : (items[0] ? items[0].technician : 'Teknisi');
+      const signTechEl = document.getElementById('bulkPdfSignTech');
+      if (signTechEl) signTechEl.innerText = techName;
+
+      const modal = document.getElementById('modalBulkPdfReport');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeBulkPdfModal() {
+      const modal = document.getElementById('modalBulkPdfReport');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // =========================================================================
+    // FITUR REKAPITULASI BULANAN: KIRIM EMAIL MASSAL
+    // =========================================================================
+    function openBulkEmailModal() {
+      const items = getSelectedOrMonthlyItems();
+      if (items.length === 0) {
+        showToast('Tidak ada data agenda untuk dikirim via email!', true);
+        return;
+      }
+
+      const countDisplay = document.getElementById('bulkEmailCountDisplay');
+      if (countDisplay) countDisplay.innerText = `${items.length} agenda maintenance & work order akan dirangkum`;
+
+      const modal = document.getElementById('modalBulkEmailReport');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeBulkEmailModal() {
+      const modal = document.getElementById('modalBulkEmailReport');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function confirmSendBulkEmail() {
+      const recipient = document.getElementById('bulkEmailRecipient').value.trim();
+      const cc = document.getElementById('bulkEmailCc').value.trim();
+      const subject = document.getElementById('bulkEmailSubject').value.trim() || 'Rekapitulasi Laporan Maintenance - Jadwalin HW';
+      const notes = document.getElementById('bulkEmailNotes').value.trim();
+      const btn = document.getElementById('btnConfirmBulkEmail');
+
+      if (!recipient) {
+        showToast('Masukkan alamat email penerima!', true);
+        return;
+      }
+
+      const items = getSelectedOrMonthlyItems();
+      const mNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      const periodStr = `Bulan ${mNames[currentCalMonth]} ${currentCalYear}`;
+
+      const optimalCount = items.filter(i => i.status === 'Optimal' || i.status === 'Selesai / Closed' || i.status === 'Selesai').length;
+      const pendingCount = items.length - optimalCount;
+
+      let tableRowsHtml = items.map((item, idx) => `
+        <tr style="border-bottom: 1px solid #e2e8f0; font-size: 11px;">
+          <td style="padding: 8px; text-align: center;">${idx + 1}</td>
+          <td style="padding: 8px; font-weight: bold; font-family: monospace;">${item.taskId}</td>
+          <td style="padding: 8px;">${item.date}</td>
+          <td style="padding: 8px; font-weight: bold; color: ${item.itemType === 'WO' ? '#2563eb' : '#059669'};">${item.itemType}</td>
+          <td style="padding: 8px;">${item.klinik}</td>
+          <td style="padding: 8px;">${item.title}</td>
+          <td style="padding: 8px;">${item.technician}</td>
+          <td style="padding: 8px; text-align: center; font-weight: bold; color: ${item.status === 'Optimal' ? '#059669' : '#d97706'};">${item.status}</td>
+          <td style="padding: 8px; text-align: center; color: #d97706;">★ ${item.rating}</td>
+        </tr>
+      `).join('');
+
+      const htmlBody = `
+        <div style="font-family: Arial, sans-serif; max-width: 750px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; color: #334155;">
+          <div style="border-bottom: 2px solid #006837; padding-bottom: 12px; margin-bottom: 16px;">
+            <h2 style="margin: 0; color: #0f172a; font-size: 18px;">JADWALIN HW - REKAPITULASI LAPORAN BULANAN</h2>
+            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 12px;">Periode: <strong>${periodStr}</strong> | Total: <strong>${items.length} Agenda</strong></p>
+          </div>
+
+          <table width="100%" style="margin-bottom: 16px; background-color: #f8fafc; border-radius: 8px; padding: 12px; font-size: 12px;">
+            <tr>
+              <td align="center"><strong>Total Agenda:</strong><br><span style="font-size: 16px; font-weight: bold; color: #0f172a;">${items.length}</span></td>
+              <td align="center"><strong>Optimal / Selesai:</strong><br><span style="font-size: 16px; font-weight: bold; color: #059669;">${optimalCount}</span></td>
+              <td align="center"><strong>Pending / Delay:</strong><br><span style="font-size: 16px; font-weight: bold; color: #d97706;">${pendingCount}</span></td>
+            </tr>
+          </table>
+
+          ${notes ? `<div style="background-color: #f1f5f9; border-left: 4px solid #006837; padding: 10px; font-size: 12px; margin-bottom: 16px;"><strong>Catatan Tambahan:</strong><br>${notes}</div>` : ''}
+
+          <table width="100%" style="border-collapse: collapse; text-align: left; margin-bottom: 20px;">
+            <thead>
+              <tr style="background-color: #0f172a; color: #ffffff; font-size: 11px;">
+                <th style="padding: 8px; text-align: center;">No</th>
+                <th style="padding: 8px;">ID</th>
+                <th style="padding: 8px;">Tanggal</th>
+                <th style="padding: 8px;">Tipe</th>
+                <th style="padding: 8px;">Klinik</th>
+                <th style="padding: 8px;">Aset / Judul</th>
+                <th style="padding: 8px;">Teknisi</th>
+                <th style="padding: 8px; text-align: center;">Status</th>
+                <th style="padding: 8px; text-align: center;">Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRowsHtml}
+            </tbody>
+          </table>
+
+          <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 20px;">
+            Laporan ini digenerate secara otomatis oleh sistem <strong>Jadwalin HW</strong>.
+          </p>
+        </div>
+      `;
+
+      const plainText = `JADWALIN HW - REKAPITULASI LAPORAN\nPeriode: ${periodStr}\nTotal: ${items.length} Agenda\nOptimal: ${optimalCount} | Pending: ${pendingCount}`;
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Mengirim Rekapitulasi...`;
+      }
+
+      google.script.run.withSuccessHandler(function(res) {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Rekapitulasi Sekarang`;
+        }
+        closeBulkEmailModal();
+        showToast(res.message || 'Rekapitulasi email berhasil dikirim!');
+      }).sendBulkEmailReport(recipient, {
+        subject: subject,
+        htmlBody: htmlBody,
+        plainText: plainText,
+        cc: cc
+      }, cc);
+    }
+
+    // =========================================================================
+    // FITUR EXPORT DATA BULANAN / MASSAL (CSV / EXCEL SPREADSHEET)
+    // =========================================================================
+    function exportBulkDataToCsv() {
+      const items = getSelectedOrMonthlyItems();
+      if (items.length === 0) {
+        showToast('Tidak ada data agenda untuk diexport!', true);
+        return;
+      }
+
+      const headers = ['No', 'Task ID', 'Tanggal', 'Tipe Agenda', 'Lokasi / Klinik', 'Detail Lokasi', 'Aset / Judul Tugas', 'Teknisi', 'Status', 'Rating', 'Link Attachment'];
+      
+      const csvRows = [headers.join(',')];
+
+      items.forEach((item, index) => {
+        const row = [
+          index + 1,
+          `"${(item.taskId || '').replace(/"/g, '""')}"`,
+          `"${(item.date || '').replace(/"/g, '""')}"`,
+          `"${(item.itemType || '').replace(/"/g, '""')}"`,
+          `"${(item.klinik || '').replace(/"/g, '""')}"`,
+          `"${(item.lokasi || '').replace(/"/g, '""')}"`,
+          `"${(item.title || '').replace(/"/g, '""')}"`,
+          `"${(item.technician || '').replace(/"/g, '""')}"`,
+          `"${(item.status || '').replace(/"/g, '""')}"`,
+          `"${(item.rating || '5.0').replace(/"/g, '""')}"`,
+          `"${(item.attachment || '').replace(/"/g, '""')}"`
+        ];
+        csvRows.push(row.join(','));
+      });
+
+      const csvContent = '\uFEFF' + csvRows.join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+
+      const mStr = String(currentCalMonth + 1).padStart(2, '0');
+      const filename = `Rekap_JadwalinHW_${currentCalYear}_${mStr}.csv`;
+
+      const downloadLink = document.createElement('a');
+      downloadLink.href = url;
+      downloadLink.setAttribute('download', filename);
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      showToast(`Berhasil mengekspor ${items.length} baris data ke file: ${filename}`);
     }
 
     function executeBulkUpdate() {
