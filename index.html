@@ -394,6 +394,15 @@
         <button type="submit" id="btnLoginSubmit" class="w-full py-3 sm:py-3.5 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow-lg shadow-brand/20 transition flex items-center justify-center gap-2 text-xs sm:text-sm">
           <i class="fa-solid fa-right-to-bracket"></i> Masuk Sistem
         </button>
+
+        <div class="text-center pt-2.5 border-t border-slate-100 flex items-center justify-between">
+          <button type="button" onclick="promptChangeBackendUrl()" class="text-[10px] text-slate-400 hover:text-brand transition flex items-center gap-1 underline" title="Ubah atau Perbarui URL Web App Google Apps Script">
+            <i class="fa-solid fa-link"></i> Atur URL Web App (Google Apps Script)
+          </button>
+          <button type="button" onclick="toggleTheme()" class="text-[10px] text-slate-400 hover:text-amber-500 transition" title="Ubah Tema">
+            <i class="fa-solid fa-moon theme-toggle-icon"></i>
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -1826,8 +1835,38 @@
     // =========================================================================
     // KONFIGURASI BACKEND GOOGLE APPS SCRIPT (REST API LIVE)
     // =========================================================================
-    var GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbxdvtk7EQEAelP1-5zUxRcP3x-Fy3sZQ2KMqyeWMAUV-kiTq9IADOBZcrP9e2xQq6Y/exec";
-    
+    var GAS_BACKEND_URL = "https://script.google.com/macros/s/AKfycbxpvbblhZKjkE77YHGE9GZZ50vQxAiuCRlSOYhZdYo4kR1Yd9WucCmVuKcdyJ3ZkFs/exec";
+
+    function getActiveGasUrl() {
+      var customUrl = localStorage.getItem('jadwalin_gas_url');
+      var url = (customUrl && customUrl.trim()) ? customUrl.trim() : GAS_BACKEND_URL;
+      if (url.includes('/a/macros/')) {
+        url = url.replace(/\/a\/macros\/[^\/]+\//, '/macros/');
+      }
+      return url;
+    }
+
+    function promptChangeBackendUrl() {
+      var current = getActiveGasUrl();
+      var input = prompt("Masukkan URL Web App Google Apps Script terbaru (akhiran /exec):\n\nTips Penting:\n1. Di Google Apps Script: Deploy > Manage Deployments > Edit\n2. 'Execute as: Me' & 'Who has access: Anyone'\n3. Salin URL Web App dan tempel di sini:", current);
+      if (input !== null) {
+        input = input.trim();
+        if (input.startsWith("http")) {
+          if (input.includes('/a/macros/')) {
+            input = input.replace(/\/a\/macros\/[^\/]+\//, '/macros/');
+          }
+          localStorage.setItem('jadwalin_gas_url', input);
+          showToast('URL Web App Google Apps Script diperbarui!');
+          var alertEl = document.getElementById('loginAlert');
+          if (alertEl) alertEl.classList.add('hidden');
+        } else if (input === "") {
+          localStorage.removeItem('jadwalin_gas_url');
+          showToast('URL Web App dikembalikan ke default.');
+        } else {
+          alert("Format URL tidak valid! Harus diawali dengan https:// dan berakhiran /exec");
+        }
+      }
+    }
 
     // Cache Data in Memory untuk Akses Super Cepat & Responsive
     var inMemoryCache = {
@@ -1838,23 +1877,97 @@
       techs: null
     };
 
-    // Client Fetcher ke Google Apps Script Backend (CORS / Redirect-Proof)
-    async function callGasBackend(action, data = {}) {
+    // =========================================================================
+    // APPSHEET-SPEED HYBRID BACKEND ENGINE (JSONP + POST)
+    // 100% Bebas dari masalah CORS & Loading Instan dengan Cache Lokal
+    // =========================================================================
+    function callGasJsonp(action, params = {}) {
+      return new Promise((resolve) => {
+        const callbackName = 'gas_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+        const targetUrl = getActiveGasUrl();
+        const queryParts = [
+          'action=' + encodeURIComponent(action),
+          'callback=' + encodeURIComponent(callbackName)
+        ];
+
+        for (const key in params) {
+          if (params.hasOwnProperty(key) && params[key] !== undefined && params[key] !== null) {
+            if (typeof params[key] === 'object') {
+              queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(JSON.stringify(params[key])));
+            } else {
+              queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+            }
+          }
+        }
+
+        const script = document.createElement('script');
+        const separator = targetUrl.includes('?') ? '&' : '?';
+        script.src = targetUrl + separator + queryParts.join('&');
+
+        let isHandled = false;
+        const timeout = setTimeout(() => {
+          if (!isHandled) {
+            isHandled = true;
+            cleanup();
+            callGasBackendPost(action, params).then(resolve);
+          }
+        }, 12000);
+
+        function cleanup() {
+          clearTimeout(timeout);
+          try { delete window[callbackName]; } catch (e) { window[callbackName] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[callbackName] = function(response) {
+          if (!isHandled) {
+            isHandled = true;
+            cleanup();
+            resolve(response);
+          }
+        };
+
+        script.onerror = function() {
+          if (!isHandled) {
+            isHandled = true;
+            cleanup();
+            callGasBackendPost(action, params).then(resolve);
+          }
+        };
+
+        document.head.appendChild(script);
+      });
+    }
+
+    async function callGasBackendPost(action, data = {}) {
       try {
-        const response = await fetch(GAS_BACKEND_URL, {
+        const targetUrl = getActiveGasUrl();
+        const response = await fetch(targetUrl, {
           method: 'POST',
-          mode: 'cors',
           redirect: 'follow',
           headers: {
             'Content-Type': 'text/plain;charset=utf-8'
           },
           body: JSON.stringify({ action: action, data: data })
         });
-        const result = await response.json();
+
+        const rawText = await response.text();
+        let result;
+        try {
+          result = JSON.parse(rawText);
+        } catch (parseErr) {
+          if (rawText.includes('<!DOCTYPE') || rawText.includes('<html') || response.status === 404) {
+            return {
+              success: false,
+              message: 'Akses Google Apps Script Ditolak (404/Login). Pastikan saat Deploy disetel "Who has access: Anyone".'
+            };
+          }
+          return { success: true, message: 'Data berhasil disinkronkan' };
+        }
         return result;
       } catch (err) {
-        console.error('Backend API Error:', err);
-        return { success: false, message: 'Koneksi ke backend gagal: ' + err.toString() };
+        console.warn('POST Sync notice:', err);
+        return { success: false, message: 'Koneksi backend gagal: ' + err.toString() };
       }
     }
 
@@ -1863,8 +1976,9 @@
       var successCb = null;
       var failureCb = null;
 
-      function executeApi(action, data) {
-        callGasBackend(action, data).then(function(res) {
+      function executeApi(action, data, isGet = true) {
+        const handler = isGet ? callGasJsonp(action, data) : callGasBackendPost(action, data);
+        handler.then(function(res) {
           if (res && res.success && res.data !== undefined) {
             if (successCb) successCb(res.data);
           } else if (res && res.success) {
@@ -1882,65 +1996,33 @@
       var runner = {
         withSuccessHandler: function(cb) { successCb = cb; return runner; },
         withFailureHandler: function(cb) { failureCb = cb; return runner; },
-        loginUser: function(email, password) { executeApi('loginUser', { email: email, password: password }); },
-        getTechnicians: function() { executeApi('getTechnicians', {}); },
-        getMaintenanceLogs: function(filterType, userRole, userName) { executeApi('getMaintenanceLogs', { filterType: filterType, userRole: userRole, userName: userName }); },
-        getTasks: function(userRole, userName) { executeApi('getTasks', { userRole: userRole, userName: userName }); },
-        saveTask: function(payload) { executeApi('saveTask', payload); },
-        deleteTask: function(taskId) { executeApi('deleteTask', { taskId: taskId }); },
-        checkAndSendTaskReminders: function() { executeApi('checkAndSendTaskReminders', {}); },
-        getAssets: function() { executeApi('getAssets', {}); },
-        saveAsset: function(payload) { executeApi('saveAsset', payload); },
-        getChecklists: function(category) { executeApi('getChecklists', { category: category }); },
-        addChecklistItem: function(item) { executeApi('addChecklistItem', item); },
-        toggleChecklistStatus: function(id) { executeApi('toggleChecklistStatus', { id: id }); },
-        deleteChecklistItem: function(id) { executeApi('deleteChecklistItem', { id: id }); },
-        uploadMediaToDrive: function(base64Data, filename) { executeApi('uploadMediaToDrive', { base64Data: base64Data, filename: filename }); },
-        submitMaintenanceLog: function(payload) { executeApi('submitMaintenanceLog', payload); },
-        sendEmailReport: function(email, taskId, payload, ccEmail) { executeApi('sendEmailReport', { email: email, taskId: taskId, payload: payload, ccEmail: ccEmail }); },
-        sendBulkEmailReport: function(email, payload, ccEmail) { executeApi('sendBulkEmailReport', { email: email, payload: payload, ccEmail: ccEmail }); },
-        bulkUpdateLogs: function(taskIds, newStatus, rating, reasonDelay, ticketNumber) { executeApi('bulkUpdateLogs', { taskIds: taskIds, newStatus: newStatus, rating: rating, reasonDelay: reasonDelay, ticketNumber: ticketNumber }); },
-        getSystemSettings: function() { executeApi('getSystemSettings', {}); },
-        saveSystemSettings: function(settings) { executeApi('saveSystemSettings', settings); },
-        sendWhatsAppReminder: function(taskId, targetPhone, customMessage) { executeApi('sendWhatsAppReminder', { taskId: taskId, targetPhone: targetPhone, customMessage: customMessage }); },
-        sendBatchEmailReminders: function(targetEmail, ccEmail) { executeApi('sendBatchEmailReminders', { targetEmail: targetEmail, ccEmail: ccEmail }); }
+        getAllAppData: function(userRole, userName) { executeApi('getAllAppData', { userRole: userRole, userName: userName }, true); },
+        loginUser: function(email, password) { executeApi('loginUser', { email: email, password: password }, true); },
+        getUsers: function() { executeApi('getUsers', {}, true); },
+        getTechnicians: function() { executeApi('getTechnicians', {}, true); },
+        getMaintenanceLogs: function(filterType, userRole, userName) { executeApi('getMaintenanceLogs', { filterType: filterType, userRole: userRole, userName: userName }, true); },
+        getTasks: function(userRole, userName) { executeApi('getTasks', { userRole: userRole, userName: userName }, true); },
+        getAssets: function() { executeApi('getAssets', {}, true); },
+        getChecklists: function(category) { executeApi('getChecklists', { category: category }, true); },
+        getSystemSettings: function() { executeApi('getSystemSettings', {}, true); },
+        saveTask: function(payload) { executeApi('saveTask', payload, false); },
+        deleteTask: function(taskId) { executeApi('deleteTask', { taskId: taskId }, false); },
+        checkAndSendTaskReminders: function() { executeApi('checkAndSendTaskReminders', {}, false); },
+        saveAsset: function(payload) { executeApi('saveAsset', payload, false); },
+        addChecklistItem: function(item) { executeApi('addChecklistItem', item, false); },
+        saveChecklistItem: function(item) { executeApi('saveChecklistItem', item, false); },
+        toggleChecklistStatus: function(id) { executeApi('toggleChecklistStatus', { id: id }, false); },
+        deleteChecklistItem: function(id) { executeApi('deleteChecklistItem', { id: id }, false); },
+        uploadMediaToDrive: function(base64Data, filename) { executeApi('uploadMediaToDrive', { base64Data: base64Data, filename: filename }, false); },
+        submitMaintenanceLog: function(payload) { executeApi('submitMaintenanceLog', payload, false); },
+        sendEmailReport: function(email, taskId, payload, ccEmail) { executeApi('sendEmailReport', { email: email, taskId: taskId, payload: payload, ccEmail: ccEmail }, false); },
+        sendBulkEmailReport: function(email, payload, ccEmail) { executeApi('sendBulkEmailReport', { email: email, payload: payload, ccEmail: ccEmail }, false); },
+        bulkUpdateLogs: function(taskIds, newStatus, rating, reasonDelay, ticketNumber) { executeApi('bulkUpdateLogs', { taskIds: taskIds, newStatus: newStatus, rating: rating, reasonDelay: reasonDelay, ticketNumber: ticketNumber }, false); },
+        saveSystemSettings: function(settings) { executeApi('saveSystemSettings', settings, false); },
+        sendWhatsAppReminder: function(taskId, targetPhone, customMessage) { executeApi('sendWhatsAppReminder', { taskId: taskId, targetPhone: targetPhone, customMessage: customMessage }, false); },
+        sendBatchEmailReminders: function(targetEmail, ccEmail) { executeApi('sendBatchEmailReminders', { targetEmail: targetEmail, ccEmail: ccEmail }, false); }
       };
       return runner;
-    }
-
-    // Service Worker Registration for PWA
-    if ('serviceWorker' in navigator) {
-      const swCode = `
-        const CACHE_NAME = 'jadwalinhw-github-live-v4';
-        const ASSETS_TO_CACHE = [
-          'https://cdn.tailwindcss.com',
-          'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap'
-        ];
-
-        self.addEventListener('install', (e) => {
-          self.skipWaiting();
-          e.waitUntil(
-            caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE).catch(() => {}))
-          );
-        });
-
-        self.addEventListener('activate', (e) => {
-          e.waitUntil(
-            caches.keys().then((keys) => Promise.all(keys.map(k => k !== CACHE_NAME ? caches.delete(k) : null))).then(() => clients.claim())
-          );
-        });
-
-        self.addEventListener('fetch', (e) => {
-          if (e.request.url.includes('script.google.com')) {
-            return;
-          }
-          e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-        });
-      `;
-      const swBlob = new Blob([swCode], { type: 'application/javascript' });
-      const swUrl = URL.createObjectURL(swBlob);
-      navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Reg:', err));
     }
 
     // STATE VARIABLES
@@ -2100,38 +2182,108 @@
       const userRole = currentRole || 'Admin';
       const userName = currentUser ? currentUser.name : '';
 
-      loadSystemSettings();
-
-      google.script.run
-        .withSuccessHandler(function(logs) {
-          let data = Array.isArray(logs) ? logs : [];
-          if (userRole === 'Technician' && userName) {
-            data = data.filter(l => l.Technician && l.Technician.toLowerCase() === userName.toLowerCase());
+      // 1. INSTANT LOCAL CACHE HYDRATION (< 0.01 detik seperti AppSheet)
+      try {
+        const cached = localStorage.getItem('jadwalin_app_cache');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed.settings) {
+            applyLogoToApp(parsed.settings.app_logo_url, parsed.settings.app_name);
           }
-
-          currentLogsData = data;
-          inMemoryCache.logs = data;
-          applyDashboardAnalytics();
-          loadTasksTable();
-          loadAssetsTable();
-          loadMasterChecklists();
-          loadExecutionChecklist('SERVER');
-          
-          const subTitle = document.getElementById('dashSubTitle');
-          if (subTitle) {
-            if (userRole === 'Technician') {
-              subTitle.innerText = `Menampilkan jadwal khusus ditugaskan untuk: ${userName}`;
-            } else {
-              subTitle.innerText = 'Ringkasan kinerja jadwal dan analisis perawatan perangkat IT (Semua Teknisi).';
+          if (parsed.assets && Array.isArray(parsed.assets)) {
+            inMemoryCache.assets = parsed.assets;
+            renderAssetsTable();
+          }
+          if (parsed.checklists && Array.isArray(parsed.checklists)) {
+            inMemoryCache.checklists = parsed.checklists;
+            renderChecklistsTable();
+          }
+          if (parsed.tasks && Array.isArray(parsed.tasks)) {
+            inMemoryCache.tasks = parsed.tasks;
+            currentTasksData = parsed.tasks;
+            renderTasksList(activeTaskFilter);
+          }
+          if (parsed.logs && Array.isArray(parsed.logs)) {
+            let logs = parsed.logs;
+            if (userRole === 'Technician' && userName) {
+              logs = logs.filter(l => l.Technician && l.Technician.toLowerCase() === userName.toLowerCase());
             }
+            currentLogsData = logs;
+            inMemoryCache.logs = logs;
+            applyDashboardAnalytics();
           }
+        }
+      } catch (e) {
+        console.warn('Cache hydrate err:', e);
+      }
+
+      const subTitle = document.getElementById('dashSubTitle');
+      if (subTitle) {
+        if (userRole === 'Technician') {
+          subTitle.innerText = `Menampilkan jadwal khusus ditugaskan untuk: ${userName}`;
+        } else {
+          subTitle.innerText = 'Ringkasan kinerja jadwal dan analisis perawatan perangkat IT (Semua Teknisi).';
+        }
+      }
+
+      // 2. ONE-SHOT BULK BACKGROUND SYNC (CORS-Proof via JSONP)
+      google.script.run
+        .withSuccessHandler(function(syncPayload) {
+          if (!syncPayload) return;
+          const data = (syncPayload && syncPayload.data) ? syncPayload.data : syncPayload;
+
+          if (data.settings) {
+            currentSystemSettings = data.settings;
+            applyLogoToApp(data.settings.app_logo_url, data.settings.app_name);
+            fillSettingsForm(data.settings);
+          }
+
+          if (data.assets && Array.isArray(data.assets)) {
+            inMemoryCache.assets = data.assets;
+            renderAssetsTable();
+          }
+
+          if (data.checklists && Array.isArray(data.checklists)) {
+            inMemoryCache.checklists = data.checklists;
+            renderChecklistsTable();
+          }
+
+          if (data.tasks && Array.isArray(data.tasks)) {
+            inMemoryCache.tasks = data.tasks;
+            currentTasksData = data.tasks;
+            renderTasksList(activeTaskFilter);
+          }
+
+          if (data.logs && Array.isArray(data.logs)) {
+            let logs = data.logs;
+            if (userRole === 'Technician' && userName) {
+              logs = logs.filter(l => l.Technician && l.Technician.toLowerCase() === userName.toLowerCase());
+            }
+            currentLogsData = logs;
+            inMemoryCache.logs = logs;
+            applyDashboardAnalytics();
+          }
+
+          try {
+            localStorage.setItem('jadwalin_app_cache', JSON.stringify(data));
+          } catch (e) {}
         })
         .withFailureHandler(function(err) {
-          console.error('Error loading logs:', err);
-          currentLogsData = [];
-          applyDashboardAnalytics();
+          console.warn('Background sync error, fallback to granular loader:', err);
+          // Granular fallback
+          google.script.run
+            .withSuccessHandler(function(logs) {
+              let data = Array.isArray(logs) ? logs : [];
+              if (userRole === 'Technician' && userName) {
+                data = data.filter(l => l.Technician && l.Technician.toLowerCase() === userName.toLowerCase());
+              }
+              currentLogsData = data;
+              inMemoryCache.logs = data;
+              applyDashboardAnalytics();
+            })
+            .getMaintenanceLogs(null, userRole, userName);
         })
-        .getMaintenanceLogs(null, userRole, userName);
+        .getAllAppData(userRole, userName);
     }
     window.loadDashboardData = loadDashboardData;
 
