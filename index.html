@@ -1859,9 +1859,12 @@
           showToast('URL Web App Google Apps Script diperbarui!');
           var alertEl = document.getElementById('loginAlert');
           if (alertEl) alertEl.classList.add('hidden');
+          // Langsung trigger refresh instan
+          if (window.loadDashboardData) window.loadDashboardData();
         } else if (input === "") {
           localStorage.removeItem('jadwalin_gas_url');
           showToast('URL Web App dikembalikan ke default.');
+          if (window.loadDashboardData) window.loadDashboardData();
         } else {
           alert("Format URL tidak valid! Harus diawali dengan https:// dan berakhiran /exec");
         }
@@ -1887,7 +1890,8 @@
         const targetUrl = getActiveGasUrl();
         const queryParts = [
           'action=' + encodeURIComponent(action),
-          'callback=' + encodeURIComponent(callbackName)
+          'callback=' + encodeURIComponent(callbackName),
+          '_t=' + Date.now() // Cache buster untuk selalu dapat data real-time saat diedit di Sheet
         ];
 
         for (const key in params) {
@@ -1911,11 +1915,13 @@
             cleanup();
             callGasBackendPost(action, params).then(resolve);
           }
-        }, 12000);
+        }, 15000);
 
         function cleanup() {
           clearTimeout(timeout);
-          try { delete window[callbackName]; } catch (e) { window[callbackName] = undefined; }
+          // Set as no-op function to prevent ReferenceError if late
+          window[callbackName] = function() {};
+          setTimeout(() => { try { delete window[callbackName]; } catch (e) {} }, 60000);
           if (script.parentNode) script.parentNode.removeChild(script);
         }
 
@@ -4072,6 +4078,42 @@
       }).checkAndSendTaskReminders();
     }
 
+    function renderChecklistsTable(lists) {
+      const targetLists = lists || inMemoryCache.checklists || [];
+      const tbody = document.getElementById('checklistTableBody');
+      if (!tbody) return;
+
+      if (!targetLists || targetLists.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 italic">Belum ada item checklist di sheet. Tambahkan checklist baru.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = targetLists.map(c => `
+        <tr class="hover:bg-slate-50 border-b border-slate-100">
+          <td class="p-3 font-bold text-slate-700">${c.ChecklistID || c.id || '-'}</td>
+          <td class="p-3 font-semibold"><span class="px-2 py-1 bg-slate-100 rounded text-slate-600 text-[10px] font-bold">${c.Category || 'OTHER'}</span></td>
+          <td class="p-3 text-slate-600 font-medium">${c.ItemDescription || c.description || '-'}</td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${(c.IsActive === true || c.IsActive === 'true' || c.IsActive === 1) ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}">
+              ${(c.IsActive === true || c.IsActive === 'true' || c.IsActive === 1) ? 'Aktif' : 'Nonaktif'}
+            </span>
+          </td>
+          <td class="p-3 text-right space-x-1.5 whitespace-nowrap">
+            <button onclick="openModalEditChecklist('${c.ChecklistID || c.id}', '${c.Category || 'SERVER'}', '${encodeURIComponent(c.ItemDescription || c.description || '')}', ${c.IsActive})" class="px-2.5 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-bold transition">
+              <i class="fa-solid fa-pen-to-square"></i> Edit
+            </button>
+            <button onclick="toggleChecklistStatus('${c.ChecklistID || c.id}')" class="px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-bold transition">
+              <i class="fa-solid fa-repeat"></i> Toggle
+            </button>
+            <button onclick="deleteChecklist('${c.ChecklistID || c.id}')" class="px-2 py-1 text-red-500 hover:bg-red-50 rounded-lg text-xs font-bold transition" title="Hapus">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    window.renderChecklistsTable = renderChecklistsTable;
+
     function loadMasterChecklists() {
       if (inMemoryCache.checklists) {
         renderChecklistsTable(inMemoryCache.checklists);
@@ -4081,41 +4123,8 @@
         inMemoryCache.checklists = lists;
         renderChecklistsTable(lists);
       }).getChecklists();
-
-      function renderChecklistsTable(lists) {
-        const tbody = document.getElementById('checklistTableBody');
-        if (!tbody) return;
-
-        if (lists.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 italic">Belum ada item checklist di sheet. Tambahkan checklist baru.</td></tr>`;
-          return;
-        }
-
-        tbody.innerHTML = lists.map(c => `
-          <tr class="hover:bg-slate-50 border-b border-slate-100">
-            <td class="p-3 font-bold text-slate-700">${c.ChecklistID}</td>
-            <td class="p-3 font-semibold"><span class="px-2 py-1 bg-slate-100 rounded text-slate-600 text-[10px] font-bold">${c.Category}</span></td>
-            <td class="p-3 text-slate-600 font-medium">${c.ItemDescription}</td>
-            <td class="p-3">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${c.IsActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}">
-                ${c.IsActive ? 'Aktif' : 'Nonaktif'}
-              </span>
-            </td>
-            <td class="p-3 text-right space-x-1.5 whitespace-nowrap">
-              <button onclick="openModalEditChecklist('${c.ChecklistID}', '${c.Category}', '${encodeURIComponent(c.ItemDescription || '')}', ${c.IsActive})" class="px-2.5 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-bold transition">
-                <i class="fa-solid fa-pen-to-square"></i> Edit
-              </button>
-              <button onclick="toggleChecklistStatus('${c.ChecklistID}')" class="px-2.5 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-bold transition">
-                <i class="fa-solid fa-repeat"></i> Toggle
-              </button>
-              <button onclick="deleteChecklist('${c.ChecklistID}')" class="px-2 py-1 text-red-500 hover:bg-red-50 rounded-lg text-xs font-bold transition" title="Hapus">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `).join('');
-      }
     }
+    window.loadMasterChecklists = loadMasterChecklists;
 
     function loadExecutionChecklist(category) {
       google.script.run.withSuccessHandler(function(data) {
@@ -4152,6 +4161,56 @@
       if (progEl) progEl.innerText = `${done}/${total} DONE`;
     }
 
+    function renderAssetsTable(assets) {
+      const data = assets || inMemoryCache.assets || [];
+      const tbody = document.getElementById('assetTableBody');
+      if (!tbody) return;
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 italic">Belum ada inventaris aset IT di Sheet. Klik "+ Tambah Aset Baru" untuk menambahkan.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.map((a, idx) => {
+        const assetId = a.AssetID || a.assetId || a['Asset ID'] || a['AssetId'] || ('AST-' + (idx + 1));
+        const category = a.Category || a.category || 'PC Desktop';
+        const location = a.Location || a.location || '-';
+        const room = a.Room || a.room || '-';
+        const rawName = a.AssetName || a.assetName || a['Asset Name'];
+        const assetName = (rawName && String(rawName).trim() !== '') ? rawName : (category + (room && room !== '-' ? ' (' + room + ')' : '') + ' - ' + assetId);
+        const status = a.Status || a.status || 'Optimal';
+        const healthRating = a.HealthRating || a.healthRating || '5.0';
+
+        const isOptimal = String(status).toLowerCase() === 'optimal' || String(status).toLowerCase() === 'aktif';
+        const isWarning = String(status).toLowerCase().includes('need') || String(status).toLowerCase().includes('perhatian');
+
+        return `
+          <tr class="hover:bg-slate-50 border-b border-slate-100">
+            <td class="p-3 font-bold text-slate-800">${assetId}</td>
+            <td class="p-3 font-semibold text-slate-700">${assetName}</td>
+            <td class="p-3"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[10px] font-bold">${category}</span></td>
+            <td class="p-3 text-slate-600 font-medium">${location}</td>
+            <td class="p-3 text-slate-500">${room}</td>
+            <td class="p-3">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isOptimal ? 'bg-emerald-100 text-emerald-700' : (isWarning ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700')}">
+                ${status}
+              </span>
+            </td>
+            <td class="p-3 font-medium text-amber-500">★ ${healthRating}</td>
+            <td class="p-3 text-right space-x-1">
+              <button onclick="openModalEditAsset('${assetId}', '${encodeURIComponent(assetName)}', '${category}', '${encodeURIComponent(location)}', '${encodeURIComponent(room)}', '${status}', '${healthRating}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition" title="Edit Aset">
+                <i class="fa-solid fa-pen-to-square"></i> Edit
+              </button>
+              <button onclick="inspectSpecificAsset('${assetId}', '${category}', '${encodeURIComponent(location)}')" class="px-3 py-1 bg-brand text-white text-[11px] font-bold rounded-lg hover:bg-brand-dark transition shadow-sm">
+                <i class="fa-solid fa-clipboard-check mr-1"></i> Inspeksi
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+    window.renderAssetsTable = renderAssetsTable;
+
     function loadAssetsTable() {
       if (inMemoryCache.assets) {
         renderAssetsTable(inMemoryCache.assets);
@@ -4160,42 +4219,10 @@
         const data = Array.isArray(assets) ? assets : [];
         inMemoryCache.assets = data;
         renderAssetsTable(data);
+        populateTaskLocationsDropdown();
       }).getAssets();
-
-      function renderAssetsTable(data) {
-        const tbody = document.getElementById('assetTableBody');
-        if (!tbody) return;
-
-        if (data.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 italic">Belum ada inventaris aset IT di Sheet. Klik "+ Tambah Aset Baru" untuk menambahkan.</td></tr>`;
-          return;
-        }
-
-        tbody.innerHTML = data.map(a => `
-          <tr class="hover:bg-slate-50 border-b border-slate-100">
-            <td class="p-3 font-bold text-slate-800">${a.AssetID}</td>
-            <td class="p-3 font-semibold text-slate-700">${a.AssetName}</td>
-            <td class="p-3"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[10px] font-bold">${a.Category}</span></td>
-            <td class="p-3 text-slate-600 font-medium">${a.Location || '-'}</td>
-            <td class="p-3 text-slate-500">${a.Room || '-'}</td>
-            <td class="p-3">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${a.Status === 'Optimal' ? 'bg-emerald-100 text-emerald-700' : (a.Status === 'Needs Attention' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700')}">
-                ${a.Status}
-              </span>
-            </td>
-            <td class="p-3 font-medium text-amber-500">★ ${a.HealthRating || '5.0'}</td>
-            <td class="p-3 text-right space-x-1">
-              <button onclick="openModalEditAsset('${a.AssetID}', '${a.AssetName}', '${a.Category}', '${a.Location}', '${a.Room}', '${a.Status}', '${a.HealthRating}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition" title="Edit Aset">
-                <i class="fa-solid fa-pen-to-square"></i> Edit
-              </button>
-              <button onclick="inspectSpecificAsset('${a.AssetID}', '${a.Category}', '${a.Location}')" class="px-3 py-1 bg-brand text-white text-[11px] font-bold rounded-lg hover:bg-brand-dark transition shadow-sm">
-                <i class="fa-solid fa-clipboard-check mr-1"></i> Inspeksi
-              </button>
-            </td>
-          </tr>
-        `).join('');
-      }
     }
+    window.loadAssetsTable = loadAssetsTable;
 
     function openModalAddAsset() {
       document.getElementById('assetModalTitle').innerText = 'Tambah Aset IT Baru';
@@ -4211,16 +4238,16 @@
       document.getElementById('modalAsset').classList.remove('hidden');
     }
 
-    function openModalEditAsset(assetId, assetName, category, location, room, status, healthRating) {
+    function openModalEditAsset(assetId, assetNameEnc, category, locationEnc, roomEnc, status, healthRating) {
       document.getElementById('assetModalTitle').innerText = 'Edit Data Aset IT: ' + assetId;
       const idInput = document.getElementById('assetIdInput');
       idInput.value = assetId;
       idInput.disabled = true;
 
-      document.getElementById('assetNameInput').value = assetName || '';
-      document.getElementById('assetCategorySelect').value = category || 'SERVER';
-      document.getElementById('assetLocationSelect').value = location || '';
-      document.getElementById('assetRoomSelect').value = room || '';
+      document.getElementById('assetNameInput').value = decodeURIComponent(assetNameEnc || '');
+      document.getElementById('assetCategorySelect').value = category || 'PC Desktop';
+      document.getElementById('assetLocationSelect').value = decodeURIComponent(locationEnc || '');
+      document.getElementById('assetRoomSelect').value = decodeURIComponent(roomEnc || '');
       document.getElementById('assetStatusSelect').value = status || 'Optimal';
       document.getElementById('assetRatingSelect').value = healthRating || '5';
 
