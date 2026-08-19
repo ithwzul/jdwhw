@@ -31,8 +31,7 @@
             brand: {
               DEFAULT: '#006837',
               dark: '#004d28',
-              light: '#10b981',
-              soft: '#e6f4ea',
+              light: '#008c4a'
             }
           }
         }
@@ -130,7 +129,7 @@
     })();
   </script>
 
-  <!-- Custom Styles -->
+  <!-- Custom Styles (Pure Clean Light Theme) -->
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -177,80 +176,31 @@
     .kanban-col {
       min-height: 380px;
     }
-    /* =========================================================================
-       DARK THEME STYLES (ELEGANT SLATE THEME)
-       ========================================================================= */
-    html.dark, body.dark {
-      background-color: #0b1329 !important;
-      color: #f1f5f9 !important;
+    .kanban-col.drag-over {
+      background-color: #f0fdf4 !important;
+      border: 2px dashed #006837 !important;
     }
-    .dark body {
-      background-color: #0b1329 !important;
-      color: #f1f5f9 !important;
+    .kanban-card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: grab;
     }
-    .dark aside#mainSidebar, .dark header {
-      background-color: #111c38 !important;
-      border-color: #1e293b !important;
+    .kanban-card:active {
+      cursor: grabbing;
+      opacity: 0.6;
+      transform: scale(0.98);
     }
-    .dark .bg-white {
-      background-color: #111c38 !important;
-      border-color: #1e293b !important;
-      color: #f1f5f9 !important;
+    .kanban-card.is-dragging {
+      opacity: 0.4;
+      border: 2px dashed #006837;
     }
-    .dark .bg-slate-50 {
-      background-color: #0b1329 !important;
-      border-color: #1e293b !important;
+
+    /* Pulse for Lazy Loading */
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
     }
-    .dark .bg-slate-100 {
-      background-color: #1e293b !important;
-      color: #cbd5e1 !important;
-    }
-    .dark .text-slate-800 {
-      color: #f8fafc !important;
-    }
-    .dark .text-slate-700 {
-      color: #e2e8f0 !important;
-    }
-    .dark .text-slate-600 {
-      color: #cbd5e1 !important;
-    }
-    .dark .text-slate-500, .dark .text-slate-400 {
-      color: #94a3b8 !important;
-    }
-    .dark .border-slate-100, .dark .border-slate-200, .dark .border-slate-200\/80 {
-      border-color: #1e293b !important;
-    }
-    .dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
-      border-color: #1e293b !important;
-    }
-    .dark tr:hover {
-      background-color: #162447 !important;
-    }
-    .dark input, .dark select, .dark textarea {
-      background-color: #0b1329 !important;
-      color: #f8fafc !important;
-      border-color: #334155 !important;
-    }
-    .dark input:focus, .dark select:focus, .dark textarea:focus {
-      border-color: #10b981 !important;
-    }
-    .dark .custom-shadow {
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5) !important;
-    }
-    .dark .nav-item:not(.bg-brand\/10) {
-      color: #94a3b8 !important;
-    }
-    .dark .nav-item:not(.bg-brand\/10):hover {
-      background-color: #1e293b !important;
-      color: #f8fafc !important;
-    }
-    .dark .kanban-col {
-      background-color: #0d1733 !important;
-      border-color: #1e293b !important;
-    }
-    .dark .kanban-card {
-      background-color: #111c38 !important;
-      border-color: #1e293b !important;
+    .animate-pulse-subtle {
+      animation: pulse-subtle 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
     @media print {
@@ -262,6 +212,19 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col lg:flex-row antialiased bg-slate-50 text-slate-700 overflow-x-hidden">
+
+  <!-- GLOBAL LAZY LOADING SPINNER OVERLAY -->
+  <div id="globalLoadingOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center hidden transition-all">
+    <div class="bg-white p-6 rounded-3xl shadow-2xl flex flex-col items-center gap-3.5 max-w-xs mx-4 text-center border border-slate-100">
+      <div class="w-12 h-12 rounded-2xl bg-brand/10 text-brand flex items-center justify-center text-xl font-bold">
+        <i class="fa-solid fa-arrows-rotate fa-spin"></i>
+      </div>
+      <div>
+        <p class="font-bold text-slate-800 text-sm" id="globalLoadingTitle">Menyinkronkan Data...</p>
+        <p class="text-[11px] text-slate-400 mt-0.5" id="globalLoadingSubtitle">Menyimpan perubahan ke Google Sheets</p>
+      </div>
+    </div>
+  </div>
 
   <!-- Mobile Top Header Bar -->
   <header class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
@@ -277,10 +240,10 @@
     </div>
     
     <div class="flex items-center gap-1.5">
-      <button onclick="toggleTheme()" class="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition" title="Ubah Tema (Light / Dark)">
-        <i class="fa-solid fa-moon theme-toggle-icon text-base"></i>
+      <button onclick="loadDashboardData()" class="p-2 text-slate-600 hover:text-brand hover:bg-slate-100 rounded-xl transition" title="Sync Data Google Sheets">
+        <i class="fa-solid fa-arrows-rotate text-base"></i>
       </button>
-      <button onclick="toggleMobileSidebar()" class="p-2 text-slate-600 dark:text-slate-300 hover:text-brand hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition" title="Buka Menu">
+      <button onclick="toggleMobileSidebar()" class="p-2 text-slate-600 hover:text-brand hover:bg-slate-100 rounded-xl transition" title="Buka Menu">
         <i id="btnMobileMenuIcon" class="fa-solid fa-bars text-lg"></i>
       </button>
     </div>
@@ -350,10 +313,10 @@
           </div>
         </div>
         <div class="flex items-center gap-1 shrink-0">
-          <button onclick="toggleTheme()" class="p-1.5 text-slate-400 hover:text-amber-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Ubah Tema (Light / Dark)">
-            <i class="fa-solid fa-moon theme-toggle-icon"></i>
+          <button onclick="loadDashboardData()" class="p-1.5 text-slate-400 hover:text-brand rounded-lg hover:bg-slate-100 transition" title="Sync Data Google Sheets">
+            <i class="fa-solid fa-arrows-rotate"></i>
           </button>
-          <button onclick="logout()" class="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition" title="Keluar / Logout">
+          <button onclick="logout()" class="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition" title="Keluar / Logout">
             <i class="fa-solid fa-right-from-bracket"></i>
           </button>
         </div>
@@ -395,12 +358,9 @@
           <i class="fa-solid fa-right-to-bracket"></i> Masuk Sistem
         </button>
 
-        <div class="text-center pt-2.5 border-t border-slate-100 flex items-center justify-between">
-          <button type="button" onclick="promptChangeBackendUrl()" class="text-[10px] text-slate-400 hover:text-brand transition flex items-center gap-1 underline" title="Ubah atau Perbarui URL Web App Google Apps Script">
+        <div class="text-center pt-2.5 border-t border-slate-100">
+          <button type="button" onclick="promptChangeBackendUrl()" class="text-[10px] text-slate-400 hover:text-brand transition flex items-center justify-center gap-1 mx-auto underline" title="Ubah atau Perbarui URL Web App Google Apps Script">
             <i class="fa-solid fa-link"></i> Atur URL Web App (Google Apps Script)
-          </button>
-          <button type="button" onclick="toggleTheme()" class="text-[10px] text-slate-400 hover:text-amber-500 transition" title="Ubah Tema">
-            <i class="fa-solid fa-moon theme-toggle-icon"></i>
           </button>
         </div>
       </form>
@@ -1074,24 +1034,78 @@
 
     <!-- VIEW 5: ASET HW (MASTER ASSETS - ADMIN ONLY) -->
     <section id="view-assets" class="space-y-5 sm:space-y-6 hidden">
-      <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 custom-shadow">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 sm:mb-6">
+      <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 custom-shadow space-y-4 sm:space-y-5">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
-            <h3 class="font-bold text-slate-800 text-base sm:text-lg"><i class="fa-solid fa-server text-brand mr-2"></i> Master Data Aset IT</h3>
-            <p class="text-xs text-slate-500">Kelola daftar inventaris perangkat IT, lokasi, dan ruangan penempatan.</p>
+            <h3 class="font-bold text-slate-800 text-base sm:text-lg flex items-center gap-2">
+              <i class="fa-solid fa-server text-brand"></i> Master Data Aset IT
+            </h3>
+            <p class="text-xs text-slate-400">Kelola daftar inventaris perangkat IT, lokasi klinik, dan ruangan penempatan.</p>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="refreshCurrentView('assets')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+          <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <!-- View Mode: Accordion (+/- Lokasi) vs Tabel Lengkap -->
+            <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-bold shadow-inner">
+              <button id="btnAssetViewAccordion" onclick="setAssetDisplayMode('accordion')" class="px-3 py-1.5 rounded-lg bg-brand text-white shadow-sm transition flex items-center gap-1.5" title="Kelompokkan Berdasarkan Lokasi">
+                <i class="fa-solid fa-folder-tree"></i> (+/-) Lokasi
+              </button>
+              <button id="btnAssetViewTable" onclick="setAssetDisplayMode('table')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition flex items-center gap-1.5" title="Tampilkan Semua Tabel">
+                <i class="fa-solid fa-table"></i> Semua Tabel
+              </button>
+            </div>
+
+            <button onclick="refreshCurrentView('assets')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition" title="Refresh Data Aset">
               <i class="fa-solid fa-arrows-rotate"></i> Refresh
             </button>
-            <button onclick="openModalAddAsset()" class="px-3.5 py-2 bg-brand hover:bg-brand-dark text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
+            <button onclick="openModalAddAsset()" class="px-3.5 py-2 bg-brand hover:bg-brand-dark text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
               <i class="fa-solid fa-plus"></i> Tambah Aset Baru
             </button>
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs min-w-[600px]">
+        <!-- Filter & Search Toolbar Interaktif -->
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+            <input type="text" id="assetSearchInput" oninput="filterAssetsTable()" placeholder="Cari Aset (ID, Nama, Ruangan, Kategori, Lokasi)..." class="w-full pl-9 pr-8 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand font-medium">
+            <button onclick="clearAssetSearch()" id="btnClearAssetSearch" class="hidden absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2 overflow-x-auto">
+            <select id="assetLocationFilterSelect" onchange="filterAssetsTable()" class="p-2 text-xs bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:outline-none focus:border-brand cursor-pointer shadow-sm min-w-[160px]">
+              <option value="ALL">Semua Lokasi</option>
+            </select>
+
+            <select id="assetCategoryFilterSelect" onchange="filterAssetsTable()" class="p-2 text-xs bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:outline-none focus:border-brand cursor-pointer shadow-sm min-w-[140px]">
+              <option value="ALL">Semua Kategori</option>
+            </select>
+
+            <div id="accordionControlButtons" class="flex items-center gap-1">
+              <button onclick="expandAllAssetLocations()" class="px-2.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-600 text-[11px] font-bold shadow-sm whitespace-nowrap" title="Buka Semua Lokasi">
+                <i class="fa-solid fa-plus text-brand mr-1"></i> Buka Semua
+              </button>
+              <button onclick="collapseAllAssetLocations()" class="px-2.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-600 text-[11px] font-bold shadow-sm whitespace-nowrap" title="Tutup Semua Lokasi">
+                <i class="fa-solid fa-minus text-slate-500 mr-1"></i> Tutup Semua
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Summary Bar -->
+        <div class="flex items-center justify-between text-xs text-slate-500 px-1 font-medium">
+          <span id="assetCountSummaryText">Menampilkan 0 aset</span>
+          <span class="text-[11px] text-slate-400"><i class="fa-solid fa-circle-info mr-1"></i> Klik baris lokasi untuk memperluas / menutup daftar aset</span>
+        </div>
+
+        <!-- ACCORDION MODE CONTAINER (+ / - Lokasi) -->
+        <div id="assetAccordionContainer" class="space-y-3">
+          <!-- Dynamic Location Accordion Cards -->
+        </div>
+
+        <!-- TABLE VIEW CONTAINER (Flat List) -->
+        <div id="assetTableContainer" class="hidden overflow-x-auto">
+          <table class="w-full text-left text-xs min-w-[700px]">
             <thead class="bg-slate-50 text-slate-500 uppercase">
               <tr>
                 <th class="p-3">Asset ID</th>
@@ -3589,12 +3603,21 @@
       const newStatus = document.getElementById('bulkTargetStatus').value;
       const rating = document.getElementById('bulkTargetRating').value;
 
-      google.script.run.withSuccessHandler(function(res) {
-        showToast(res.message || 'Berhasil memperbarui jadwal massal!');
-        selectedBulkTaskIds = [];
-        document.getElementById('selectedTaskCount').innerText = '0 Jadwal Dipilih';
-        loadDashboardData();
-      }).bulkUpdateLogs(selectedBulkTaskIds, newStatus, rating);
+      showLazyLoading('Memperbarui Status Massal...', 'Memproses pembaruan ke Google Sheets');
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          hideLazyLoading();
+          showToast(res.message || 'Berhasil memperbarui jadwal massal!');
+          selectedBulkTaskIds = [];
+          document.getElementById('selectedTaskCount').innerText = '0 Jadwal Dipilih';
+          loadDashboardData();
+        })
+        .withFailureHandler(function(err) {
+          hideLazyLoading();
+          showToast('Gagal update massal: ' + err, true);
+        })
+        .bulkUpdateLogs(selectedBulkTaskIds, newStatus, rating);
     }
 
     function setTaskDisplayMode(mode) {
@@ -4006,6 +4029,7 @@
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan Cepat...';
       }
+      showLazyLoading('Menyimpan Work Order...', 'Memperbarui tugas ke Google Sheets');
 
       try {
         const taskId = document.getElementById('taskIdInput').value;
@@ -4039,6 +4063,7 @@
         };
 
         google.script.run.withSuccessHandler(function(res) {
+          hideLazyLoading();
           if (btn) {
             btn.disabled = false;
             btn.innerHTML = 'Simpan Data Work Order';
@@ -4047,28 +4072,35 @@
           closeModalTask();
           loadTasksTable();
           renderCalendar();
-        }).withFailureHandler(function() {
+        }).withFailureHandler(function(err) {
+          hideLazyLoading();
           if (btn) {
             btn.disabled = false;
             btn.innerHTML = 'Simpan Data Work Order';
           }
-          showToast('Gagal menyimpan task', true);
+          showToast('Gagal menyimpan task: ' + err, true);
         }).saveTask(payload);
       } catch (err) {
+        hideLazyLoading();
         if (btn) {
           btn.disabled = false;
           btn.innerHTML = 'Simpan Data Work Order';
         }
-        showToast('Terjadi kesalahan', true);
+        showToast('Terjadi kesalahan: ' + err, true);
       }
     }
 
     function deleteTaskItem(taskId) {
       if (!confirm('Yakin ingin menghapus Work Order ini?')) return;
+      showLazyLoading('Menghapus Work Order...', 'Memproses penghapusan di Google Sheets');
       google.script.run.withSuccessHandler(function(res) {
+        hideLazyLoading();
         showToast(res.message || 'Work Order Dihapus!');
         loadTasksTable();
         renderCalendar();
+      }).withFailureHandler(function(err) {
+        hideLazyLoading();
+        showToast('Gagal menghapus: ' + err, true);
       }).deleteTask(taskId);
     }
 
@@ -4161,76 +4193,389 @@
       if (progEl) progEl.innerText = `${done}/${total} DONE`;
     }
 
+    // =========================================================================
+    // GLOBAL LAZY LOADING FEEDBACK CONTROLLER
+    // =========================================================================
+    function showLazyLoading(title = 'Menyinkronkan Data...', subtitle = 'Menyimpan perubahan ke Google Sheets') {
+      const overlay = document.getElementById('globalLoadingOverlay');
+      const titleEl = document.getElementById('globalLoadingTitle');
+      const subEl = document.getElementById('globalLoadingSubtitle');
+      if (titleEl) titleEl.innerText = title;
+      if (subEl) subEl.innerText = subtitle;
+      if (overlay) overlay.classList.remove('hidden');
+    }
+    window.showLazyLoading = showLazyLoading;
+
+    function hideLazyLoading() {
+      const overlay = document.getElementById('globalLoadingOverlay');
+      if (overlay) overlay.classList.add('hidden');
+    }
+    window.hideLazyLoading = hideLazyLoading;
+
+    // =========================================================================
+    // DYNAMIC CATEGORY & LOCATION AUTO-SYNC FROM ASSETS
+    // =========================================================================
+    function getUniqueCategories() {
+      const assets = inMemoryCache.assets || [];
+      let cats = [...new Set(assets.map(a => a.Category || a.category).filter(Boolean))];
+      if (cats.length === 0) {
+        cats = ['PC Desktop', 'Tablet Absensi', 'Mikrotik', 'UPS Server', 'Smartphone', 'Laptop', 'SERVER', 'NETWORK', 'POWER', 'STORAGE', 'OTHER'];
+      }
+      return cats;
+    }
+
+    function getUniqueLocations() {
+      const assets = inMemoryCache.assets || [];
+      let locs = [...new Set(assets.map(a => a.Location || a.location).filter(Boolean))];
+      if (locs.length === 0) {
+        locs = ['Klinik Gigi - FDC Alam Sutera', 'Klinik Gigi - FDC Bali', 'Klinik Utama', 'Data Center'];
+      }
+      return locs;
+    }
+
+    function populateDynamicCategoriesAndLocations() {
+      const categories = getUniqueCategories();
+      const locations = getUniqueLocations();
+
+      // 1. Asset Page Category & Location Filters
+      const assetCatFilter = document.getElementById('assetCategoryFilterSelect');
+      if (assetCatFilter) {
+        const cur = assetCatFilter.value;
+        assetCatFilter.innerHTML = '<option value="ALL">Semua Kategori</option>' + 
+          categories.map(c => `<option value="${c}">${c}</option>`).join('');
+        if (cur && categories.includes(cur)) assetCatFilter.value = cur;
+      }
+
+      const assetLocFilter = document.getElementById('assetLocationFilterSelect');
+      if (assetLocFilter) {
+        const cur = assetLocFilter.value;
+        assetLocFilter.innerHTML = '<option value="ALL">Semua Lokasi</option>' + 
+          locations.map(l => `<option value="${l}">${l}</option>`).join('');
+        if (cur && locations.includes(cur)) assetLocFilter.value = cur;
+      }
+
+      // 2. Asset Modal Category & Location
+      const assetCatSelect = document.getElementById('assetCategorySelect');
+      if (assetCatSelect) {
+        const cur = assetCatSelect.value;
+        assetCatSelect.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+        if (cur && categories.includes(cur)) assetCatSelect.value = cur;
+      }
+
+      // 3. Checklist Modal Category
+      const chkCatSelect = document.getElementById('chkAddCategory');
+      if (chkCatSelect) {
+        const cur = chkCatSelect.value;
+        chkCatSelect.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+        if (cur && categories.includes(cur)) chkCatSelect.value = cur;
+      }
+
+      // 4. Task Modal Location (Klinik)
+      const taskLocSelect = document.getElementById('taskKlinikSelect');
+      if (taskLocSelect) {
+        const cur = taskLocSelect.value;
+        taskLocSelect.innerHTML = locations.map(l => `<option value="${l}">${l}</option>`).join('');
+        if (cur && locations.includes(cur)) taskLocSelect.value = cur;
+      }
+
+      // 5. Schedule Modal Location & Asset selector
+      const schedLocSelect = document.getElementById('schedKlinikSelect');
+      if (schedLocSelect) {
+        const cur = schedLocSelect.value;
+        schedLocSelect.innerHTML = locations.map(l => `<option value="${l}">${l}</option>`).join('');
+        if (cur && locations.includes(cur)) schedLocSelect.value = cur;
+      }
+    }
+    window.populateDynamicCategoriesAndLocations = populateDynamicCategoriesAndLocations;
+
+    // =========================================================================
+    // MASTER DATA ASET IT (SEARCH, FILTER & ACCORDION (+/- LOKASI))
+    // =========================================================================
+    var assetDisplayMode = 'accordion'; // 'accordion' (+/- Lokasi) atau 'table'
+    var collapsedAssetLocations = {};
+
+    function setAssetDisplayMode(mode) {
+      assetDisplayMode = mode;
+      const btnAccordion = document.getElementById('btnAssetViewAccordion');
+      const btnTable = document.getElementById('btnAssetViewTable');
+      const accordionControls = document.getElementById('accordionControlButtons');
+      const accContainer = document.getElementById('assetAccordionContainer');
+      const tblContainer = document.getElementById('assetTableContainer');
+
+      if (mode === 'accordion') {
+        if (btnAccordion) btnAccordion.className = 'px-3 py-1.5 rounded-lg bg-brand text-white shadow-sm transition flex items-center gap-1.5';
+        if (btnTable) btnTable.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition flex items-center gap-1.5';
+        if (accordionControls) accordionControls.classList.remove('hidden');
+        if (accContainer) accContainer.classList.remove('hidden');
+        if (tblContainer) tblContainer.classList.add('hidden');
+      } else {
+        if (btnAccordion) btnAccordion.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition flex items-center gap-1.5';
+        if (btnTable) btnTable.className = 'px-3 py-1.5 rounded-lg bg-brand text-white shadow-sm transition flex items-center gap-1.5';
+        if (accordionControls) accordionControls.classList.add('hidden');
+        if (accContainer) accContainer.classList.add('hidden');
+        if (tblContainer) tblContainer.classList.remove('hidden');
+      }
+      renderAssetsTable();
+    }
+    window.setAssetDisplayMode = setAssetDisplayMode;
+
+    function toggleAssetLocationGroup(locationName) {
+      collapsedAssetLocations[locationName] = !collapsedAssetLocations[locationName];
+      renderAssetsTable();
+    }
+    window.toggleAssetLocationGroup = toggleAssetLocationGroup;
+
+    function expandAllAssetLocations() {
+      const locs = getUniqueLocations();
+      locs.forEach(l => { collapsedAssetLocations[l] = false; });
+      renderAssetsTable();
+    }
+    window.expandAllAssetLocations = expandAllAssetLocations;
+
+    function collapseAllAssetLocations() {
+      const locs = getUniqueLocations();
+      locs.forEach(l => { collapsedAssetLocations[l] = true; });
+      renderAssetsTable();
+    }
+    window.collapseAllAssetLocations = collapseAllAssetLocations;
+
+    function clearAssetSearch() {
+      const input = document.getElementById('assetSearchInput');
+      if (input) input.value = '';
+      const clearBtn = document.getElementById('btnClearAssetSearch');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      filterAssetsTable();
+    }
+    window.clearAssetSearch = clearAssetSearch;
+
+    function filterAssetsTable() {
+      const searchInput = document.getElementById('assetSearchInput');
+      const clearBtn = document.getElementById('btnClearAssetSearch');
+      if (searchInput && clearBtn) {
+        if (searchInput.value.trim() !== '') clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderAssetsTable();
+    }
+    window.filterAssetsTable = filterAssetsTable;
+
+    function getFilteredAssets() {
+      const raw = inMemoryCache.assets || [];
+      const searchKeyword = (document.getElementById('assetSearchInput')?.value || '').toLowerCase().trim();
+      const catFilter = document.getElementById('assetCategoryFilterSelect')?.value || 'ALL';
+      const locFilter = document.getElementById('assetLocationFilterSelect')?.value || 'ALL';
+
+      return raw.filter((a, idx) => {
+        const assetId = String(a.AssetID || a.assetId || a['Asset ID'] || a['AssetId'] || ('AST-' + (idx + 1))).toLowerCase();
+        const category = String(a.Category || a.category || 'PC Desktop');
+        const location = String(a.Location || a.location || '-');
+        const room = String(a.Room || a.room || '-').toLowerCase();
+        const rawName = a.AssetName || a.assetName || a['Asset Name'];
+        const assetName = String((rawName && String(rawName).trim() !== '') ? rawName : (category + ' (' + room + ') - ' + assetId)).toLowerCase();
+        const status = String(a.Status || a.status || 'Optimal').toLowerCase();
+
+        // 1. Category Filter
+        if (catFilter !== 'ALL' && category.toLowerCase() !== catFilter.toLowerCase()) return false;
+
+        // 2. Location Filter
+        if (locFilter !== 'ALL' && location.toLowerCase() !== locFilter.toLowerCase()) return false;
+
+        // 3. Search Keyword
+        if (searchKeyword) {
+          const match = assetId.includes(searchKeyword) ||
+                        assetName.includes(searchKeyword) ||
+                        category.toLowerCase().includes(searchKeyword) ||
+                        location.toLowerCase().includes(searchKeyword) ||
+                        room.includes(searchKeyword) ||
+                        status.includes(searchKeyword);
+          if (!match) return false;
+        }
+
+        return true;
+      });
+    }
+
     function renderAssetsTable(assets) {
-      const data = assets || inMemoryCache.assets || [];
+      const data = assets ? assets : getFilteredAssets();
+      const totalCount = data.length;
+
+      const summaryText = document.getElementById('assetCountSummaryText');
+      if (summaryText) summaryText.innerText = `Menampilkan ${totalCount} dari ${(inMemoryCache.assets || []).length} aset`;
+
       const tbody = document.getElementById('assetTableBody');
-      if (!tbody) return;
+      const accContainer = document.getElementById('assetAccordionContainer');
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 italic">Belum ada inventaris aset IT di Sheet. Klik "+ Tambah Aset Baru" untuk menambahkan.</td></tr>`;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 italic">Tidak ada data aset yang cocok dengan filter atau pencarian.</td></tr>`;
+        if (accContainer) accContainer.innerHTML = `<div class="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-slate-400 italic text-xs">Tidak ada data aset yang cocok dengan filter atau pencarian.</div>`;
         return;
       }
 
-      tbody.innerHTML = data.map((a, idx) => {
-        const assetId = a.AssetID || a.assetId || a['Asset ID'] || a['AssetId'] || ('AST-' + (idx + 1));
-        const category = a.Category || a.category || 'PC Desktop';
-        const location = a.Location || a.location || '-';
-        const room = a.Room || a.room || '-';
-        const rawName = a.AssetName || a.assetName || a['Asset Name'];
-        const assetName = (rawName && String(rawName).trim() !== '') ? rawName : (category + (room && room !== '-' ? ' (' + room + ')' : '') + ' - ' + assetId);
-        const status = a.Status || a.status || 'Optimal';
-        const healthRating = a.HealthRating || a.healthRating || '5.0';
+      // 1. RENDER FLAT TABLE BODY
+      if (tbody) {
+        tbody.innerHTML = data.map((a, idx) => {
+          const assetId = a.AssetID || a.assetId || a['Asset ID'] || a['AssetId'] || ('AST-' + (idx + 1));
+          const category = a.Category || a.category || 'PC Desktop';
+          const location = a.Location || a.location || '-';
+          const room = a.Room || a.room || '-';
+          const rawName = a.AssetName || a.assetName || a['Asset Name'];
+          const assetName = (rawName && String(rawName).trim() !== '') ? rawName : (category + (room && room !== '-' ? ' (' + room + ')' : '') + ' - ' + assetId);
+          const status = a.Status || a.status || 'Optimal';
+          const healthRating = a.HealthRating || a.healthRating || '5.0';
 
-        const isOptimal = String(status).toLowerCase() === 'optimal' || String(status).toLowerCase() === 'aktif';
-        const isWarning = String(status).toLowerCase().includes('need') || String(status).toLowerCase().includes('perhatian');
+          const isOptimal = String(status).toLowerCase() === 'optimal' || String(status).toLowerCase() === 'aktif';
+          const isWarning = String(status).toLowerCase().includes('need') || String(status).toLowerCase().includes('perhatian');
 
-        return `
-          <tr class="hover:bg-slate-50 border-b border-slate-100">
-            <td class="p-3 font-bold text-slate-800">${assetId}</td>
-            <td class="p-3 font-semibold text-slate-700">${assetName}</td>
-            <td class="p-3"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[10px] font-bold">${category}</span></td>
-            <td class="p-3 text-slate-600 font-medium">${location}</td>
-            <td class="p-3 text-slate-500">${room}</td>
-            <td class="p-3">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isOptimal ? 'bg-emerald-100 text-emerald-700' : (isWarning ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700')}">
-                ${status}
-              </span>
-            </td>
-            <td class="p-3 font-medium text-amber-500">★ ${healthRating}</td>
-            <td class="p-3 text-right space-x-1">
-              <button onclick="openModalEditAsset('${assetId}', '${encodeURIComponent(assetName)}', '${category}', '${encodeURIComponent(location)}', '${encodeURIComponent(room)}', '${status}', '${healthRating}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition" title="Edit Aset">
-                <i class="fa-solid fa-pen-to-square"></i> Edit
-              </button>
-              <button onclick="inspectSpecificAsset('${assetId}', '${category}', '${encodeURIComponent(location)}')" class="px-3 py-1 bg-brand text-white text-[11px] font-bold rounded-lg hover:bg-brand-dark transition shadow-sm">
-                <i class="fa-solid fa-clipboard-check mr-1"></i> Inspeksi
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
+          return `
+            <tr class="hover:bg-slate-50 border-b border-slate-100">
+              <td class="p-3 font-bold text-slate-800">${assetId}</td>
+              <td class="p-3 font-semibold text-slate-700">${assetName}</td>
+              <td class="p-3"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[10px] font-bold">${category}</span></td>
+              <td class="p-3 text-slate-600 font-medium">${location}</td>
+              <td class="p-3 text-slate-500">${room}</td>
+              <td class="p-3">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isOptimal ? 'bg-emerald-100 text-emerald-700' : (isWarning ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700')}">
+                  ${status}
+                </span>
+              </td>
+              <td class="p-3 font-medium text-amber-500">★ ${healthRating}</td>
+              <td class="p-3 text-right space-x-1 whitespace-nowrap">
+                <button onclick="openModalEditAsset('${assetId}', '${encodeURIComponent(assetName)}', '${category}', '${encodeURIComponent(location)}', '${encodeURIComponent(room)}', '${status}', '${healthRating}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition" title="Edit Aset">
+                  <i class="fa-solid fa-pen-to-square"></i> Edit
+                </button>
+                <button onclick="inspectSpecificAsset('${assetId}', '${category}', '${encodeURIComponent(location)}')" class="px-3 py-1 bg-brand text-white text-[11px] font-bold rounded-lg hover:bg-brand-dark transition shadow-sm">
+                  <i class="fa-solid fa-clipboard-check mr-1"></i> Inspeksi
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // 2. RENDER ACCORDION MODE (+ / - LOKASI)
+      if (accContainer) {
+        // Group assets by Location
+        const groups = {};
+        data.forEach(a => {
+          const loc = a.Location || a.location || 'Lokasi Belum Ditentukan';
+          if (!groups[loc]) groups[loc] = [];
+          groups[loc].push(a);
+        });
+
+        const locationKeys = Object.keys(groups).sort();
+
+        accContainer.innerHTML = locationKeys.map(locName => {
+          const items = groups[locName];
+          const isCollapsed = (collapsedAssetLocations[locName] === true);
+          const safeId = 'loc_group_' + locName.replace(/[^a-zA-Z0-9]/g, '_');
+
+          return `
+            <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm transition hover:border-slate-300">
+              <!-- Location Accordion Header Bar (+ / -) -->
+              <div onclick="toggleAssetLocationGroup('${locName}')" class="w-full p-3.5 sm:p-4 bg-slate-50 hover:bg-slate-100 flex items-center justify-between cursor-pointer select-none transition">
+                <div class="flex items-center gap-2.5 overflow-hidden">
+                  <div class="w-7 h-7 rounded-xl bg-brand/10 text-brand flex items-center justify-center font-bold text-xs shrink-0">
+                    <i class="fa-solid fa-hospital"></i>
+                  </div>
+                  <div class="truncate">
+                    <h4 class="font-bold text-slate-800 text-xs sm:text-sm truncate">${locName}</h4>
+                  </div>
+                  <span class="px-2.5 py-0.5 rounded-full bg-brand text-white text-[10px] font-extrabold shadow-sm shrink-0">
+                    ${items.length} Aset
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="px-2.5 py-1 rounded-xl text-xs font-bold ${isCollapsed ? 'bg-slate-200/80 text-slate-600' : 'bg-brand/10 text-brand'} flex items-center gap-1.5 transition">
+                    <i class="fa-solid ${isCollapsed ? 'fa-plus' : 'fa-minus'} text-[10px]"></i>
+                    <span class="hidden sm:inline">${isCollapsed ? 'Buka (+)' : 'Tutup (-)'}</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Location Accordion Body -->
+              <div id="${safeId}" class="${isCollapsed ? 'hidden' : ''} border-t border-slate-100 overflow-x-auto">
+                <table class="w-full text-left text-xs min-w-[650px]">
+                  <thead class="bg-white text-slate-400 uppercase text-[10px] border-b border-slate-100">
+                    <tr>
+                      <th class="p-3">Asset ID</th>
+                      <th class="p-3">Nama Perangkat</th>
+                      <th class="p-3">Kategori</th>
+                      <th class="p-3">Ruangan</th>
+                      <th class="p-3">Status</th>
+                      <th class="p-3">Health Rating</th>
+                      <th class="p-3 text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100">
+                    ${items.map((a, idx) => {
+                      const assetId = a.AssetID || a.assetId || a['Asset ID'] || a['AssetId'] || ('AST-' + (idx + 1));
+                      const category = a.Category || a.category || 'PC Desktop';
+                      const location = a.Location || a.location || '-';
+                      const room = a.Room || a.room || '-';
+                      const rawName = a.AssetName || a.assetName || a['Asset Name'];
+                      const assetName = (rawName && String(rawName).trim() !== '') ? rawName : (category + (room && room !== '-' ? ' (' + room + ')' : '') + ' - ' + assetId);
+                      const status = a.Status || a.status || 'Optimal';
+                      const healthRating = a.HealthRating || a.healthRating || '5.0';
+
+                      const isOptimal = String(status).toLowerCase() === 'optimal' || String(status).toLowerCase() === 'aktif';
+                      const isWarning = String(status).toLowerCase().includes('need') || String(status).toLowerCase().includes('perhatian');
+
+                      return `
+                        <tr class="hover:bg-slate-50 transition">
+                          <td class="p-3 font-bold text-slate-800 whitespace-nowrap">${assetId}</td>
+                          <td class="p-3 font-semibold text-slate-700">${assetName}</td>
+                          <td class="p-3"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[10px] font-bold">${category}</span></td>
+                          <td class="p-3 text-slate-500 font-medium">${room}</td>
+                          <td class="p-3">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isOptimal ? 'bg-emerald-100 text-emerald-700' : (isWarning ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700')}">
+                              ${status}
+                            </span>
+                          </td>
+                          <td class="p-3 font-medium text-amber-500">★ ${healthRating}</td>
+                          <td class="p-3 text-right space-x-1 whitespace-nowrap">
+                            <button onclick="openModalEditAsset('${assetId}', '${encodeURIComponent(assetName)}', '${category}', '${encodeURIComponent(location)}', '${encodeURIComponent(room)}', '${status}', '${healthRating}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition" title="Edit Aset">
+                              <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </button>
+                            <button onclick="inspectSpecificAsset('${assetId}', '${category}', '${encodeURIComponent(location)}')" class="px-3 py-1 bg-brand text-white text-[11px] font-bold rounded-lg hover:bg-brand-dark transition shadow-sm">
+                              <i class="fa-solid fa-clipboard-check mr-1"></i> Inspeksi
+                            </button>
+                          </td>
+                        </tr>
+                      `;
+                    }).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
     }
     window.renderAssetsTable = renderAssetsTable;
 
     function loadAssetsTable() {
       if (inMemoryCache.assets) {
-        renderAssetsTable(inMemoryCache.assets);
+        populateDynamicCategoriesAndLocations();
+        renderAssetsTable();
       }
       google.script.run.withSuccessHandler(function(assets) {
         const data = Array.isArray(assets) ? assets : [];
         inMemoryCache.assets = data;
-        renderAssetsTable(data);
-        populateTaskLocationsDropdown();
+        populateDynamicCategoriesAndLocations();
+        renderAssetsTable();
       }).getAssets();
     }
     window.loadAssetsTable = loadAssetsTable;
 
     function openModalAddAsset() {
+      populateDynamicCategoriesAndLocations();
       document.getElementById('assetModalTitle').innerText = 'Tambah Aset IT Baru';
       const idInput = document.getElementById('assetIdInput');
       idInput.value = '';
       idInput.disabled = false;
       document.getElementById('assetNameInput').value = '';
-      document.getElementById('assetCategorySelect').value = 'SERVER';
+      document.getElementById('assetCategorySelect').value = getUniqueCategories()[0] || 'PC Desktop';
       document.getElementById('assetLocationSelect').value = '';
       document.getElementById('assetRoomSelect').value = '';
       document.getElementById('assetStatusSelect').value = 'Optimal';
@@ -4239,6 +4584,7 @@
     }
 
     function openModalEditAsset(assetId, assetNameEnc, category, locationEnc, roomEnc, status, healthRating) {
+      populateDynamicCategoriesAndLocations();
       document.getElementById('assetModalTitle').innerText = 'Edit Data Aset IT: ' + assetId;
       const idInput = document.getElementById('assetIdInput');
       idInput.value = assetId;
@@ -4260,6 +4606,8 @@
 
     function handleSaveAsset(e) {
       e.preventDefault();
+      showLazyLoading('Menyimpan Data Aset...', 'Memperbarui data inventaris ke Google Sheets');
+
       const payload = {
         assetId: document.getElementById('assetIdInput').value,
         assetName: document.getElementById('assetNameInput').value,
@@ -4270,18 +4618,25 @@
         healthRating: parseFloat(document.getElementById('assetRatingSelect').value)
       };
 
-      google.script.run.withSuccessHandler(function(res) {
-        showToast(res.message || 'Data Aset Berhasil Disimpan!');
-        closeModalAsset();
-        loadAssetsTable();
-      }).saveAsset(payload);
+      google.script.run
+        .withSuccessHandler(function(res) {
+          hideLazyLoading();
+          showToast(res.message || 'Data Aset Berhasil Disimpan!');
+          closeModalAsset();
+          loadAssetsTable();
+        })
+        .withFailureHandler(function(err) {
+          hideLazyLoading();
+          showToast('Gagal menyimpan aset: ' + err, true);
+        })
+        .saveAsset(payload);
     }
 
     function inspectSpecificAsset(assetId, category, location) {
       document.getElementById('targetAssetId').innerText = assetId;
-      document.getElementById('targetAssetCat').innerText = category || 'SERVER';
+      document.getElementById('targetAssetCat').innerText = category || 'PC Desktop';
       document.getElementById('targetAssetLoc').innerText = location || '-';
-      loadExecutionChecklist(category || 'SERVER');
+      loadExecutionChecklist(category || 'PC Desktop');
       switchTab('execution');
     }
 
@@ -4533,6 +4888,7 @@
         btnTop.disabled = true;
         btnTop.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
       }
+      showLazyLoading('Menyimpan Pengaturan...', 'Menyinkronkan konfigurasi ke Google Sheets');
 
       try {
         let finalLogoUrl = document.getElementById('settingLogoUrl')?.value.trim() || '';
@@ -4584,25 +4940,31 @@
         try { localStorage.setItem('jadwalin_settings', JSON.stringify(settingsPayload)); } catch (e) {}
         applyLogoToApp(finalLogoUrl, appName);
 
-        google.script.run.withSuccessHandler(function(res) {
-          if (btnTop) {
-            btnTop.disabled = false;
-            btnTop.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan';
-          }
-          if (res && res.success) {
-            showToast(res.message || 'Pengaturan sistem berhasil disimpan ke Google Sheets!');
-          } else {
-            showToast('Pengaturan aktif di browser. Perbarui Deployment Google Apps Script untuk simpan ke sheet.');
-          }
-        }).withFailureHandler(function(err) {
-          if (btnTop) {
-            btnTop.disabled = false;
-            btnTop.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan';
-          }
-          showToast('Pengaturan tersimpan di browser! (Perbarui Deployment Google Apps Script untuk sinkronisasi sheet)');
-        }).saveSystemSettings(settingsPayload);
+        google.script.run
+          .withSuccessHandler(function(res) {
+            hideLazyLoading();
+            if (btnTop) {
+              btnTop.disabled = false;
+              btnTop.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan';
+            }
+            if (res && res.success) {
+              showToast(res.message || 'Pengaturan sistem berhasil disimpan ke Google Sheets!');
+            } else {
+              showToast('Pengaturan aktif di browser.');
+            }
+          })
+          .withFailureHandler(function(err) {
+            hideLazyLoading();
+            if (btnTop) {
+              btnTop.disabled = false;
+              btnTop.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan';
+            }
+            showToast('Pengaturan tersimpan di browser!');
+          })
+          .saveSystemSettings(settingsPayload);
 
       } catch (err) {
+        hideLazyLoading();
         if (btnTop) {
           btnTop.disabled = false;
           btnTop.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan';
@@ -4913,6 +5275,8 @@
       const assetId = document.getElementById('schedAssetSelect')?.value || '';
       const date = document.getElementById('scheduleDateInput')?.value || new Date().toISOString().split('T')[0];
 
+      showLazyLoading('Membuat Jadwal Maintenance...', 'Menyimpan jadwal ke Google Sheets');
+
       const payload = {
         taskId: 'TK-' + Math.floor(1000 + Math.random() * 9000),
         klinik: klinik,
@@ -4923,17 +5287,25 @@
         metode: 'Remote'
       };
 
-      google.script.run.withSuccessHandler(function(res) {
-        showToast(res.message || `Jadwal Baru Berhasil Dibuat!`);
-        closeModalNewSchedule();
-        loadDashboardData();
-      }).submitMaintenanceLog(payload);
+      google.script.run
+        .withSuccessHandler(function(res) {
+          hideLazyLoading();
+          showToast(res.message || `Jadwal Baru Berhasil Dibuat!`);
+          closeModalNewSchedule();
+          loadDashboardData();
+        })
+        .withFailureHandler(function(err) {
+          hideLazyLoading();
+          showToast('Gagal membuat jadwal: ' + err, true);
+        })
+        .submitMaintenanceLog(payload);
     }
 
     function openModalNewChecklist() {
+      populateDynamicCategoriesAndLocations();
       document.getElementById('checklistModalTitle').innerText = 'Tambah Item Checklist Baru';
       document.getElementById('chkEditId').value = '';
-      document.getElementById('chkAddCategory').value = 'SERVER';
+      document.getElementById('chkAddCategory').value = getUniqueCategories()[0] || 'PC Desktop';
       document.getElementById('chkAddDesc').value = '';
       const isAct = document.getElementById('chkIsActiveInput');
       if (isAct) isAct.checked = true;
@@ -4941,9 +5313,10 @@
     }
 
     function openModalEditChecklist(id, category, descEncoded, isActive) {
+      populateDynamicCategoriesAndLocations();
       document.getElementById('checklistModalTitle').innerText = 'Edit Master Checklist: ' + id;
       document.getElementById('chkEditId').value = id;
-      document.getElementById('chkAddCategory').value = category || 'SERVER';
+      document.getElementById('chkAddCategory').value = category || 'PC Desktop';
       document.getElementById('chkAddDesc').value = decodeURIComponent(descEncoded || '');
       const isAct = document.getElementById('chkIsActiveInput');
       if (isAct) isAct.checked = (isActive === true || isActive === 'true' || isActive === 1);
@@ -4961,6 +5334,7 @@
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
       }
+      showLazyLoading('Menyimpan Item Checklist...', 'Memperbarui SOP di Google Sheets');
 
       const id = document.getElementById('chkEditId').value;
       const category = document.getElementById('chkAddCategory').value;
@@ -4974,85 +5348,81 @@
         isActive: isActive
       };
 
-      google.script.run.withSuccessHandler(function(res) {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = 'Simpan Checklist';
-        }
-        showToast(res.message || 'Checklist berhasil disimpan!');
-        closeModalNewChecklist();
-        delete inMemoryCache.checklists;
-        loadMasterChecklists();
-        loadExecutionChecklist(category);
-      }).withFailureHandler(function(err) {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = 'Simpan Checklist';
-        }
-        showToast('Gagal menyimpan checklist: ' + err, true);
-      }).saveChecklistItem(payload);
+      google.script.run
+        .withSuccessHandler(function(res) {
+          hideLazyLoading();
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = 'Simpan Checklist';
+          }
+          showToast(res.message || 'Checklist berhasil disimpan!');
+          closeModalNewChecklist();
+          delete inMemoryCache.checklists;
+          loadMasterChecklists();
+          loadExecutionChecklist(category);
+        })
+        .withFailureHandler(function(err) {
+          hideLazyLoading();
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = 'Simpan Checklist';
+          }
+          showToast('Gagal menyimpan checklist: ' + err, true);
+        })
+        .saveChecklistItem(payload);
     }
 
     function toggleChecklistStatus(id) {
-      google.script.run.withSuccessHandler(function(res) {
-        showToast(res.message || 'Status checklist diperbarui');
-        delete inMemoryCache.checklists;
-        loadMasterChecklists();
-      }).toggleChecklistStatus(id);
+      showLazyLoading('Mengubah Status Checklist...', 'Sinkronisasi dengan Google Sheets');
+      google.script.run
+        .withSuccessHandler(function(res) {
+          hideLazyLoading();
+          showToast(res.message || 'Status checklist diperbarui');
+          delete inMemoryCache.checklists;
+          loadMasterChecklists();
+        })
+        .withFailureHandler(function(err) {
+          hideLazyLoading();
+          showToast('Gagal mengubah status: ' + err, true);
+        })
+        .toggleChecklistStatus(id);
     }
 
     function deleteChecklist(id) {
       if (!confirm('Yakin ingin menghapus item checklist ini?')) return;
-      google.script.run.withSuccessHandler(function(res) {
-        showToast(res.message || 'Checklist berhasil dihapus');
-        delete inMemoryCache.checklists;
-        loadMasterChecklists();
-      }).deleteChecklistItem(id);
+      showLazyLoading('Menghapus Item Checklist...', 'Memproses di Google Sheets');
+      google.script.run
+        .withSuccessHandler(function(res) {
+          hideLazyLoading();
+          showToast(res.message || 'Checklist berhasil dihapus');
+          delete inMemoryCache.checklists;
+          loadMasterChecklists();
+        })
+        .withFailureHandler(function(err) {
+          hideLazyLoading();
+          showToast('Gagal menghapus: ' + err, true);
+        })
+        .deleteChecklistItem(id);
     }
 
     // =========================================================================
-    // THEME CONTROLLER (LIGHT / DARK MODE) FOR ADMIN & TECHNICIAN
+    // THEME CONTROLLER (PURE LIGHT THEME ENFORCER)
     // =========================================================================
     function initTheme() {
       try {
-        const savedTheme = localStorage.getItem('jadwalin_theme') || 'light';
-        applyTheme(savedTheme, false);
+        localStorage.removeItem('jadwalin_theme');
+        document.documentElement.classList.remove('dark');
+        document.body.classList.remove('dark');
       } catch (e) {}
     }
 
     function toggleTheme() {
-      const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
-      const newTheme = isDark ? 'light' : 'dark';
-      applyTheme(newTheme, true);
+      // Light theme default
     }
 
-    function applyTheme(theme, notify = true) {
-      const isDark = (theme === 'dark');
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-        document.body.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        document.body.classList.remove('dark');
-      }
-
-      try {
-        localStorage.setItem('jadwalin_theme', theme);
-      } catch (e) {}
-
-      // Update theme toggle icons across the app
-      const icons = document.querySelectorAll('.theme-toggle-icon');
-      icons.forEach(ic => {
-        if (isDark) {
-          ic.className = 'fa-solid fa-sun text-amber-400 theme-toggle-icon';
-        } else {
-          ic.className = 'fa-solid fa-moon text-slate-500 theme-toggle-icon';
-        }
-      });
-
-      if (notify) {
-        showToast(isDark ? '🌙 Mode Gelap (Dark Mode) Aktif' : '☀️ Mode Terang (Light Mode) Aktif');
-      }
+    function applyTheme() {
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
     }
 
     // SUBMIT MAINTENANCE EXECUTION LOG (DENGAN FAST UPLOAD & AUTO COMPRESSION)
@@ -5064,6 +5434,7 @@
         btnSubmit.disabled = true;
         btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan & Mengunggah...';
       }
+      showLazyLoading('Menyimpan Log Inspeksi...', 'Mengunggah foto & tanda tangan ke Google Sheets');
 
       try {
         const taskId = currentActiveTaskId || ('TK-' + Math.floor(1000 + Math.random() * 9000));
@@ -5117,6 +5488,7 @@
 
         google.script.run
           .withSuccessHandler(function(res) {
+            hideLazyLoading();
             if (btnSubmit) {
               btnSubmit.disabled = false;
               btnSubmit.innerHTML = '<i class="fa-solid fa-circle-check"></i> SUBMIT LOG';
@@ -5126,6 +5498,7 @@
             switchTab('dashboard');
           })
           .withFailureHandler(function(err) {
+            hideLazyLoading();
             if (btnSubmit) {
               btnSubmit.disabled = false;
               btnSubmit.innerHTML = '<i class="fa-solid fa-circle-check"></i> SUBMIT LOG';
@@ -5135,11 +5508,12 @@
           .submitMaintenanceLog(payload);
 
       } catch (err) {
+        hideLazyLoading();
         if (btnSubmit) {
           btnSubmit.disabled = false;
           btnSubmit.innerHTML = '<i class="fa-solid fa-circle-check"></i> SUBMIT LOG';
         }
-        showToast('Terjadi kesalahan proses data', true);
+        showToast('Terjadi kesalahan proses data: ' + err, true);
       }
     }
 
